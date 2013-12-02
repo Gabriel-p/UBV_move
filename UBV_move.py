@@ -91,7 +91,7 @@ track = [bv_o, ub_o]
 
 
 # Read the file that stores the photometric data for all stars.
-data_file = 'data_input'
+data_file = 'data_input.dat'
     
 # Loads the data in 'myfile' as a list of N lists where N is the number of
 # columns. Each of the N lists contains all the data for the column.
@@ -160,10 +160,10 @@ plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.7)
 
 ax1.scatter(bv_obsrv, ub_obsrv, c='b')
-ax1.plot(track[0], track[1], c='k', ls='-', lw=2.)
+ax1.plot(track[0], track[1], c='k', ls='--')
 
 ax2.scatter(bv_intrsc, ub_intrsc, c='r')
-ax2.plot(track[0], track[1], c='k', ls='-', lw=0.5)
+ax2.plot(track[0], track[1], c='k', ls='--')
 
 f.tight_layout()
 
