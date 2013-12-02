@@ -19,7 +19,7 @@ import matplotlib.pyplot as plt
 def intrsc_values(bv_obsrv, ub_obsrv, e_bv):
     '''
     Takes *observed* color and magnitude lists and returns corrected or
-    intrinsic lists. Depends on the system selected/used.
+    intrinsic lists according to a given extinction value.
     '''
     # For UBVI system.
     #
@@ -36,7 +36,7 @@ def intrsc_values(bv_obsrv, ub_obsrv, e_bv):
     
 
 
-def track_distance(track, bv_intrsc, ub_intrsc):
+def track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub):
     '''
     Function that takes as input two arrays of (U-B)o and (B-V)o colors for
     a group of stars and returns for each one the point in the ZAMS closest
@@ -48,18 +48,25 @@ def track_distance(track, bv_intrsc, ub_intrsc):
     # Get distances of *every* star to *every* point in this
     # ZAMS. The list is made of N sub-lists where N is the
     # number of cluster stars and M items in each sub-list where M is
-    # the number of points in the function/track/isochrone.
+    # the number of points in the ZAMS/track/isochrone.
     # dist_m = [[star_1], [star_2], ..., [star_N]]
     # [star_i] = [dist_1, dist_2, ..., dist_M]
     dist_m = np.array(sp.cdist(zip(*bv_ub), zip(*track), 'euclidean'))
                 
     # Identify the position of the closest point in track for each star and
-    # save the index pointing to it.
+    # save the distance to it.
     min_dists = dist_m.min(axis=1)
     
+    # Save index of closest point in ZAMS to each star and the distance value.
     min_dist_indxs = []
-    for indx, item in enumerate(min_dists):
-        min_dist_indxs.append(dist_m[indx].tolist().index(item))
+    for indx, dist in enumerate(min_dists):
+        # Check if distance star-ZAMS_point fits inside the star's error
+        # rectangle.
+        err_max = np.sqrt(e_bv[indx]**2+e_ub[indx]**2)
+        if dist <= err_max:
+            min_dist_indxs.append([dist_m[indx].tolist().index(dist), dist])
+        else:
+            min_dist_indxs.append([99999, 9999.])
     
     return min_dist_indxs
 
@@ -93,41 +100,72 @@ id_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, vi_obs, e_vi = data[0], \
 data[1], data[2], data[3], data[4], data[5], data[6], data[7], data[8]
 
 
-# Ask for E(B-V) value.
-print 'Input extinction value to be used.'
-e_bv = float(raw_input('E(B-V): '))
+# Define range for E(B-V) value.
+extin_max = 2.
+extin_range = np.arange(0, extin_max, 0.01)
 
 
-# Get intrinsec values for both colors.
-bv_intrsc, ub_intrsc = intrsc_values(bv_obsrv, ub_obsrv, e_bv)
-
-
-# For each star in its intrinsic position find the point in the ZAMS closest
-# to it and assign that star to that position. This way we obtain the
-# spectral type and the absolute magnitude. 
-min_dist_indxs = track_distance(track, bv_intrsc, ub_intrsc)
+zams_indx_dist = [[99999, 9999.] for _ in range(len(id_star))]
+# Loop through all e_bv values in range.
+for extin in extin_range:
     
-print min_dist_indxs
-  
+    print 'extin:', extin
+    
+    # Get intrinsec values for both colors.
+    bv_intrsc, ub_intrsc = intrsc_values(bv_obsrv, ub_obsrv, extin)
+    
+    
+    # For each star in its intrinsic position find the point in the ZAMS closest
+    # to it and store that point's index in the ZAMS, if it falls inside the
+    # star's error rectangle.
+    min_dist_indxs = track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub)
+        
+#    print min_dist_indxs
+    
+    for indx, item in enumerate(min_dist_indxs):
+        dist_new = item[1]
+        dist_old = zams_indx_dist[indx][1]
+        if dist_new < dist_old:
+            zams_indx_dist[indx][0] = item[0]
+            zams_indx_dist[indx][1] = item[1]
 
-M_abs_filt = [M_abs[indx] for indx in min_dist_indxs]
-sp_type_stars = [sp_type[indx] for indx in min_dist_indxs]
+    print zams_indx_dist
+#    raw_input()
 
-A_v = 3.1*e_bv
-dist_mod = (np.array(m_obs) - M_abs_filt)
-dist = 10**(0.2*(dist_mod+5-A_v))
+ub_intrsc, bv_intrsc, M_abs_final, sp_type_final, dist = [], [], [], [], []
+for indx, star in enumerate(zams_indx_dist):
+    index = star[0]
+    if index != 99999:
+        ub_intrsc.append(track[1][index])
+        bv_intrsc.append(track[0][index])
+        M_abs_final.append(M_abs[index])
+        sp_type_final.append(sp_type[index])
+        # Calculate distance.
+        A_v = 3.1*extin
+        dist_mod = m_obs[indx] - M_abs[index]
+        dist.append(10**(0.2*(dist_mod+5-A_v)))
+    else:
+        ub_intrsc.append(ub_obsrv[indx])
+        bv_intrsc.append(bv_obsrv[indx])
+#    
+#    print dist
+#    print sp_type_stars
 
-print dist
-print sp_type_stars
 
-f, (ax1, ax2) = plt.subplots(1, 2, sharey=True)
+# Plots.
 
-plt.ylim(max(ub_obsrv)+0.5, min(ub_obsrv)-0.5)
+f, (ax1, ax2) = plt.subplots(1, 2) #, sharey=True
+
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.7)
+
 ax1.scatter(bv_obsrv, ub_obsrv, c='b')
 ax1.plot(track[0], track[1], c='k', ls='-', lw=2.)
 
-plt.ylim(max(ub_intrsc)+0.5, min(ub_intrsc)-0.5)
 ax2.scatter(bv_intrsc, ub_intrsc, c='r')
-ax2.plot(track[0], track[1], c='k', ls='-', marker='x', lw=0.5)
+ax2.plot(track[0], track[1], c='k', ls='-', lw=0.5)
 
-plt.show()
+f.tight_layout()
+
+# Generate output file.
+plt.savefig('output_CMD.png', dpi=150)
