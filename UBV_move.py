@@ -151,21 +151,46 @@ for indx, star in enumerate(zams_indx_dist):
 #    print dist
 #    print sp_type_stars
 
+print '\n'
+print ub_obsrv
+print ub_intrsc, '\n'
+print bv_obsrv
+print bv_intrsc
+
 
 # Plots.
+import matplotlib.gridspec as gridspec
 
-f, (ax1, ax2) = plt.subplots(1, 2) #, sharey=True
+#f, (ax1, ax2) = plt.subplots(1, 2) #, sharey=True
 
+# figsize(x1, y1), GridSpec(y2, x2) --> To have square plots: x1/x2 = 
+# y1/y2 = 2.5 
+fig = plt.figure(figsize=(10, 5)) # create the top-level container
+gs1 = gridspec.GridSpec(2, 4)  # create a GridSpec object
+#gs1.update(wspace=.09, hspace=.0)
+
+ax1 = plt.subplot(gs1[0:4, 0:2])
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.7)
-
+plt.xlabel('(B-V)', fontsize=12)
+plt.ylabel('(U-B)', fontsize=12)
+ax1.minorticks_on()
+ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 ax1.scatter(bv_obsrv, ub_obsrv, c='b')
 ax1.plot(track[0], track[1], c='k', ls='--')
 
+ax2 = plt.subplot(gs1[0:4, 2:4])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.7)
+plt.xlabel('(B-V)', fontsize=12)
+plt.ylabel('(U-B)', fontsize=12)
+ax2.minorticks_on()
+ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 ax2.scatter(bv_intrsc, ub_intrsc, c='r')
+ax2.scatter(bv_obsrv, ub_obsrv, c='b', s=4., lw=0.)
 ax2.plot(track[0], track[1], c='k', ls='--')
 
-f.tight_layout()
+fig.tight_layout()
 
 # Generate output file.
 plt.savefig('output_CMD.png', dpi=150)
