@@ -140,7 +140,7 @@ for indx, star in enumerate(zams_indx_dist):
         # Calculate distance.
         A_v = 3.1*extin
         dist_mod = m_obs[indx] - M_abs[index]
-        dist.append(10**(0.2*(dist_mod+5-A_v)))
+        dist.append((10**(0.2*(dist_mod+5-A_v)))/1000.)
     else:
         ub_intrsc.append(ub_obsrv[indx])
         bv_intrsc.append(bv_obsrv[indx])
@@ -295,15 +295,24 @@ for indx, star in enumerate(zams_indx_dist):
 
 # Generate output data file.
 with open('stars_corrected.dat', "w") as f_out:
-    f_out.write('#ID x y V ev BV ebv UB eub vi evi VR evr r SP')
+    f_out.write('#ID x y V ev BV ebv UB eub VR evr VI evi r(pxl) UB* BV* E(B-V) \
+Mv d(kpc) SP')
     f_out.write('\n')
     
-line_temp = [id_star, m_obs, e_m]
+ub_int_r = [round(elem, 2) for elem in ub_intrsc]  
+bv_int_r = [round(elem, 2) for elem in bv_intrsc]
+M_abs_f_r = [round(elem, 2) for elem in M_abs_final]
+dist_r = [round(elem, 2) for elem in dist]
+    
+line_temp = [id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, \
+e_ub, vr_obs, e_vr, vi_obs, e_vi, r_star, ub_int_r, bv_int_r, extin_list, \
+M_abs_f_r, dist_r, sp_type_final]
 lines = zip(*line_temp)
 
 with open('stars_corrected.dat', "a") as f_out:
     for line in lines:
-        f_out.write('{:<7} {:>7} {:>7}'.format(*line))
+        f_out.write('{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
+{:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9}'.format(*line))
         f_out.write('\n')
 
 print 'End.'
