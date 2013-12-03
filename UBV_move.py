@@ -107,9 +107,12 @@ extin_max = 2.
 extin_range = np.arange(0, extin_max, 0.01)
 
 
+# List that holds index and star-ZAMS_point distances.
 zams_indx_dist = [[99999, 9999.] for _ in range(len(id_star))]
+# Holds the extinction value assigned to each star.
 extin_list = [99.9 for _ in range(len(id_star))]
-# Loop through all e_bv values in range.
+
+# Loop through all extinction values in range.
 for extin in extin_range:
     
     # Get intrinsec values for both colors.
@@ -121,14 +124,18 @@ for extin in extin_range:
     min_dist_indxs = track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub)
 
     # Compare with distances and indexes obtained with previous E(B-V) value.
+    # The difference between distances is there to prevent stars from passing by
+    # points in the ZAMS because the interpolation is not dense enough.
     for indx, item in enumerate(min_dist_indxs):
         dist_new = item[1]
         dist_old = zams_indx_dist[indx][1]
-        if dist_new < dist_old and abs(dist_new - dist_old)>0.05:
+        if dist_new < dist_old and (dist_old-dist_new)>0.1:
             zams_indx_dist[indx][0] = item[0]
             zams_indx_dist[indx][1] = item[1]
             extin_list[indx] = extin
 
+
+# Generate final lists.
 ub_intrsc, bv_intrsc, M_abs_final, sp_type_final, dist = [], [], [], [], []
 for indx, star in enumerate(zams_indx_dist):
     index = star[0]
@@ -144,153 +151,169 @@ for indx, star in enumerate(zams_indx_dist):
     else:
         ub_intrsc.append(ub_obsrv[indx])
         bv_intrsc.append(bv_obsrv[indx])
+        M_abs_final.append(99.9)
+        sp_type_final.append('--')
+        dist.append(99.9)
 
 
-## Plots.
-#import matplotlib.gridspec as gridspec
-## figsize(x1, y1), GridSpec(y2, x2) --> To have square plots: x1/x2 = 
-## y1/y2 = 2.5 
-#fig = plt.figure(figsize=(30, 20)) # create the top-level container
-#gs1 = gridspec.GridSpec(12, 12)  # create a GridSpec object
-#
-#
-#ax1 = plt.subplot(gs1[0:6, 0:4])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax1.minorticks_on()
-#ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$(B-V)_{obs}\,<\,0.5$', transform = ax1.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax1.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax1.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if bv_obsrv[indx] < 0.5:
-#        ax1.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax1.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax1.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')
-#
-#
-#ax2 = plt.subplot(gs1[0:6, 4:8])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax2.minorticks_on()
-#ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$0.5\,\leq\,(B-V)_{obs}\,<\,0.75$', transform=ax2.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax2.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax2.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#
-#    if 0.5 <= bv_obsrv[indx] < 0.75:
-#        ax2.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax2.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax2.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')
-#                 
-#                 
-#ax3 = plt.subplot(gs1[0:6, 8:12])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax3.minorticks_on()
-#ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$0.75\,\leq\,(B-V)_{obs}\,<\,1.$', transform=ax3.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax3.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax3.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 0.75 <= bv_obsrv[indx] < 1.:
-#        ax3.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax3.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax3.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')                 
-#                 
-#
-#
-#ax4 = plt.subplot(gs1[6:12, 0:4])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax4.minorticks_on()
-#ax4.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$1.\,\leq\,(B-V)_{obs}\,<\,1.25$', transform=ax4.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax4.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax4.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1. <= bv_obsrv[indx] < 1.25:
-#        ax4.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax4.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax4.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')  
-#
-#
-#ax5 = plt.subplot(gs1[6:12, 4:8])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax5.minorticks_on()
-#ax5.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$1.25\,\leq\,(B-V)_{obs}\,<\,1.5$', transform=ax5.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax5.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax5.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1.25 <= bv_obsrv[indx] < 1.5:
-#        ax5.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax5.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax5.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
-#                 
-#                 
-#ax6 = plt.subplot(gs1[6:12, 8:12])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax6.minorticks_on()
-#ax6.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.7, 0.9, r'$1.5\,\leq\,(B-V)_{obs}$', transform=ax6.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=15)
-## Plot ZAMS.
-#ax6.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax6.plot(track[0], track[1], c='k', ls='-')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1.5 <= bv_obsrv[indx]:
-#        ax6.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax6.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax6.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
-#                 
-#fig.tight_layout()
-#
-## Generate output plot file.
-#plt.savefig('output_CMD.png', dpi=300)
+# Plots.
+print 'Creating output plots.'
+import matplotlib.gridspec as gridspec
+# figsize(x1, y1), GridSpec(y2, x2) --> To have square plots: x1/x2 = 
+# y1/y2 = 2.5 
+fig = plt.figure(figsize=(30, 20)) # create the top-level container
+gs1 = gridspec.GridSpec(12, 12)  # create a GridSpec object
+
+
+ax1 = plt.subplot(gs1[0:6, 0:4])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax1.minorticks_on()
+ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$(B-V)_{obs}\,<\,0.5$', transform = ax1.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax1.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax1.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+    if bv_obsrv[indx] < 0.5:
+        ax1.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax1.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax1.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')
+
+
+ax2 = plt.subplot(gs1[0:6, 4:8])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax2.minorticks_on()
+ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$0.5\,\leq\,(B-V)_{obs}\,<\,0.75$', transform=ax2.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax2.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax2.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+
+    if 0.5 <= bv_obsrv[indx] < 0.75:
+        ax2.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax2.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax2.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')
+                 
+                 
+ax3 = plt.subplot(gs1[0:6, 8:12])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax3.minorticks_on()
+ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$0.75\,\leq\,(B-V)_{obs}\,<\,1.$', transform=ax3.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax3.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax3.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+    if 0.75 <= bv_obsrv[indx] < 1.:
+        ax3.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax3.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax3.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')                 
+                 
+
+
+ax4 = plt.subplot(gs1[6:12, 0:4])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax4.minorticks_on()
+ax4.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$1.\,\leq\,(B-V)_{obs}\,<\,1.25$', transform=ax4.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax4.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax4.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+    if 1. <= bv_obsrv[indx] < 1.25:
+        ax4.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax4.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax4.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')  
+
+
+ax5 = plt.subplot(gs1[6:12, 4:8])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax5.minorticks_on()
+ax5.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$1.25\,\leq\,(B-V)_{obs}\,<\,1.5$', transform=ax5.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax5.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax5.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+    if 1.25 <= bv_obsrv[indx] < 1.5:
+        ax5.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax5.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax5.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
+                 
+                 
+ax6 = plt.subplot(gs1[6:12, 8:12])
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('(B-V)', fontsize=16)
+plt.ylabel('(U-B)', fontsize=16)
+ax6.minorticks_on()
+ax6.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+plt.text(0.67, 0.93, r'$1.5\,\leq\,(B-V)_{obs}$', transform=ax6.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+ax6.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
+ax6.plot(track[0], track[1], c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot stars.
+for indx, star in enumerate(bv_intrsc):
+    if 1.5 <= bv_obsrv[indx]:
+        ax6.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
+        ax6.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
+                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
+        ax6.plot([bv_intrsc[indx], bv_obsrv[indx]],
+                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
+                 
+fig.tight_layout()
+
+# Generate output plot file.
+plt.savefig('output_CMD.png', dpi=300)
 
 
 # Generate output data file.
