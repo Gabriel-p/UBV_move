@@ -120,11 +120,11 @@ for extin in extin_range:
     # The point must fall inside the star's error rectangle.
     min_dist_indxs = track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub)
 
-    
+    # Compare with distances and indexes obtained with previous E(B-V) value.
     for indx, item in enumerate(min_dist_indxs):
         dist_new = item[1]
         dist_old = zams_indx_dist[indx][1]
-        if dist_new < dist_old:
+        if dist_new < dist_old and abs(dist_new - dist_old)>0.05:
             zams_indx_dist[indx][0] = item[0]
             zams_indx_dist[indx][1] = item[1]
             extin_list[indx] = extin
