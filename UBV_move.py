@@ -73,39 +73,58 @@ def track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub):
 
 
 
-# Read the file with the ZAMS to be used. Options are S-K, Girardi-Marigo 
-# and Girardi-PARSEC of a given metallicity.
+def get_track(ZAMS_file):
+	'''
+	Read the file with the ZAMS to be used. Options are S-K, Girardi-Marigo 
+	and Girardi-PARSEC of a given metallicity.
+	'''
+	bv_o, ub_o, M_abs, sp_type = [], [], [], []
+	with open(ZAMS_file, mode="r") as z_f:
+	    for line in z_f:
+	        li=line.strip()
+	        # Jump comments.
+	        if not li.startswith("#"):
+	            reader = li.split()           
+	            bv_o.append(float(reader[2]))
+	            ub_o.append(float(reader[1]))
+	            M_abs.append(float(reader[3]))
+	            sp_type.append(str(reader[0]))
+	            
+	track = [bv_o, ub_o]
+
+	return track, bv_o, ub_o, M_abs, sp_type
+
+
+def read_input(data_file):
+	'''
+	Read the file that stores the photometric data for all stars.
+	'''
+	# Loads the data in 'myfile' as a list of N lists where N is the number of
+	# columns. Each of the N lists contains all the data for the column.
+	data = np.loadtxt(data_file, unpack=True)
+	id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, vr_obs, \
+	e_vr, vi_obs, e_vi, r_star = data[0], data[1], data[2], data[3], data[4], data[5], \
+	data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13]
+
+	return id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, \
+	vr_obs, e_vr, vi_obs, e_vi, r_star
+
+
+
+# Get interpolated ZAMS points.
 ZAMS_file = 'zams_SK'
+track, bv_o, ub_o, M_abs, sp_type = get_track(ZAMS_file)
 
-bv_o, ub_o, M_abs, sp_type = [], [], [], []
-with open(ZAMS_file, mode="r") as z_f:
-    for line in z_f:
-        li=line.strip()
-        # Jump comments.
-        if not li.startswith("#"):
-            reader = li.split()           
-            bv_o.append(float(reader[2]))
-            ub_o.append(float(reader[1]))
-            M_abs.append(float(reader[3]))
-            sp_type.append(str(reader[0]))
-            
-track = [bv_o, ub_o]
-
-
-# Read the file that stores the photometric data for all stars.
+# Get input data from file.
 data_file = 'data_input.dat'
-    
-# Loads the data in 'myfile' as a list of N lists where N is the number of
-# columns. Each of the N lists contains all the data for the column.
-data = np.loadtxt(data_file, unpack=True)
-id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, vr_obs, \
-e_vr, vi_obs, e_vi, r_star = data[0], data[1], data[2], data[3], data[4], data[5], \
-data[6], data[7], data[8], data[9], data[10], data[11], data[12], data[13]
+id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, \
+vr_obs, e_vr, vi_obs, e_vi, r_star = read_input(data_file)
 
-
+# Get max value for E(B-V)
+extin_max = float(raw_input('Max E(B-V): '))
 # Define range for E(B-V) value.
-extin_max = 2.
 extin_range = np.arange(0, extin_max, 0.01)
+
 
 
 # List that holds index and star-ZAMS_point distances.
@@ -318,6 +337,8 @@ plt.savefig('output_CMD.png', dpi=300)
 
 
 # Generate output data file.
+print 'Generating data output file.'
+
 with open('stars_corrected.dat', "w") as f_out:
     f_out.write('#ID x y V ev BV ebv UB eub VR evr VI evi r(pxl) UB* BV* E(B-V) \
 Mv d(kpc) SP')
