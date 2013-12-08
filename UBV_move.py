@@ -333,7 +333,7 @@ for indx, star in enumerate(bv_intrsc):
 fig.tight_layout()
 
 # Generate output plot file.
-plt.savefig('output_CMD.png', dpi=300)
+plt.savefig('output_CMD.pdf', dpi=300)
 
 
 # Generate output data file.
