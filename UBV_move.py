@@ -8,7 +8,7 @@ Created on Thu Nov 14 17:02:23 2013
 
 '''
 Take a star data file with photometric (U-B) and (B-V) colors and place each
-one over a given ZAMS obtaining the parameters for all.
+one over a given ZAMS obtaining the parameters for all stars.
 '''
 
 import numpy as np
@@ -18,8 +18,8 @@ import matplotlib.pyplot as plt
 
 def intrsc_values(bv_obsrv, ub_obsrv, e_bv):
     '''
-    Takes *observed* color and magnitude lists and returns corrected or
-    intrinsic lists according to a given extinction value.
+    Takes *observed* color and magnitude lists and returns corrected/intrinsic
+    lists according to a given extinction law and value.
     '''
     # For UBVI system.
     #
@@ -72,8 +72,9 @@ def track_distance(track, bv_intrsc, ub_intrsc, e_bv, e_ub):
     return min_dist_indxs
 
 
-# Read the files with the ZAMS to be used. Options are S-K, Girardi-Marigo 
-# and Girardi PARSEC with a given metallicity.
+
+# Read the file with the ZAMS to be used. Options are S-K, Girardi-Marigo 
+# and Girardi-PARSEC of a given metallicity.
 ZAMS_file = 'zams_SK'
 
 bv_o, ub_o, M_abs, sp_type = [], [], [], []
