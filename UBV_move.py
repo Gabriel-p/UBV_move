@@ -5,12 +5,6 @@ Created on Thu Nov 14 17:02:23 2013
 @author: gabriel
 """
 
-
-'''
-Take a star data file with photometric (U-B) and (B-V) colors and place each
-one over a given ZAMS obtaining the parameters for all stars.
-'''
-
 import numpy as np
 import scipy.spatial.distance as sp
 import matplotlib.pyplot as plt
@@ -110,6 +104,12 @@ def read_input(data_file):
     return id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub
 
 
+
+'''
+Take a cluster data file with photometric (U-B) and (B-V) colors and move each
+star over a given ZAMS thus obtaining its parameters: extinction, distance,
+absolute magnitude and spectral type.
+'''
 
 # Get name, max extinction and distance (this last value for plotting)
 clust_name = str(raw_input('Cluster name: '))
