@@ -277,58 +277,139 @@ print 'Output file generated.'
 # Plots.
 print 'Creating output plots.'
 
-fig = plt.figure(figsize=(10, 10)) # create the top-level container
+fig = plt.figure(figsize=(20, 10)) # create the top-level container
+#fig, axes = plt.subplots(2, 2)
+#    ...: for ax in axes.ravel(): #ravel axes to a flattened array 
+#    ...:     ax.set_xlim(0, 10)
+#    ...:     ax.set_ylim(0, 20)
+#    ...:     ax.set_xlabel('Label_x')
+#    ...:     ax.set_ylabel('Label_y')
 
-hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0], bins=100)
+hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0],
+                                      bins=500)
 
 # Plot density map.
-ax1 = fig.add_subplot(221)
+ax1 = fig.add_subplot(231)
 # Axis limits.
 plt.xlim(0, d_max)
 plt.ylim(0, max(ext_dist_all[0]))
-plt.xlabel('Dist (kpc)', fontsize=10)
-plt.ylabel('$E_{(B-V)}$', fontsize=12)
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
-h_g = gaussian_filter(hist, 0.1, mode='constant')        
+h_g = gaussian_filter(hist, 1.5, mode='constant')
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax1.text(0.7, 0.85, text, transform = ax1.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)    
 plt.imshow(h_g.transpose(), origin='lower',
            extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
            cmap=plt.get_cmap('jet'), aspect='auto')
            
 # Plot density map.
-ax2 = fig.add_subplot(222)
+ax2 = fig.add_subplot(232)
 # Axis limits.
 plt.xlim(0, d_max)
 plt.ylim(0, max(ext_dist_all[0]))
-plt.xlabel('Dist (kpc)', fontsize=10)
-plt.ylabel('$E_{(B-V)}$', fontsize=12)
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
-h_g = gaussian_filter(hist, 0.5, mode='constant')        
+h_g = gaussian_filter(hist, 2., mode='constant')
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax2.text(0.7, 0.85, text, transform = ax2.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14) 
 plt.imshow(h_g.transpose(), origin='lower',
            extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
            cmap=plt.get_cmap('jet'), aspect='auto')
 
 # Plot density map.
-ax3 = fig.add_subplot(223)
+ax3 = fig.add_subplot(233)
 # Axis limits.
 plt.xlim(0, d_max)
 plt.ylim(0, max(ext_dist_all[0]))
-plt.xlabel('Dist (kpc)', fontsize=10)
-plt.ylabel('$E_{(B-V)}$', fontsize=12)
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
-h_g = gaussian_filter(hist, 1., mode='constant')        
+h_g = gaussian_filter(hist, 2.5, mode='constant')
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax3.text(0.7, 0.85, text, transform = ax3.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)      
 plt.imshow(h_g.transpose(), origin='lower',
            extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
            cmap=plt.get_cmap('jet'), aspect='auto')
            
 # Plot density map.
-ax4 = fig.add_subplot(224)
+ax4 = fig.add_subplot(234)
 # Axis limits.
 plt.xlim(0, d_max)
 plt.ylim(0, max(ext_dist_all[0]))
-plt.xlabel('Dist (kpc)', fontsize=10)
-plt.ylabel('$E_{(B-V)}$', fontsize=12)
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
-h_g = gaussian_filter(hist, 1.5, mode='constant')        
+h_g = gaussian_filter(hist, 3., mode='constant')
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax4.text(0.7, 0.85, text, transform = ax4.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14) 
+plt.imshow(h_g.transpose(), origin='lower',
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           cmap=plt.get_cmap('jet'), aspect='auto')
+           
+# Plot density map.
+ax5 = fig.add_subplot(235)
+# Axis limits.
+plt.xlim(0, d_max)
+plt.ylim(0, max(ext_dist_all[0]))
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
+# H_g is the 2D histogram with a gaussian filter applied
+h_g = gaussian_filter(hist, 3.5, mode='constant')
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax5.text(0.7, 0.85, text, transform = ax5.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)  
+plt.imshow(h_g.transpose(), origin='lower',
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           cmap=plt.get_cmap('jet'), aspect='auto')
+           
+# Plot density map.
+ax6 = fig.add_subplot(236)
+# Axis limits.
+plt.xlim(0, d_max)
+plt.ylim(0, max(ext_dist_all[0]))
+plt.xlabel('Dist (kpc)', fontsize=12)
+plt.ylabel('$E_{(B-V)}$', fontsize=14)
+# H_g is the 2D histogram with a gaussian filter applied
+h_g = gaussian_filter(hist, 4., mode='constant')   
+x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+np.average(xedges[y_max:y_max + 2])
+text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+text = text1 + text2
+ax6.text(0.7, 0.85, text, transform = ax6.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
            extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
            cmap=plt.get_cmap('jet'), aspect='auto')
@@ -348,8 +429,6 @@ plt.xlabel('$(B-V)_o$', fontsize=18)
 plt.ylabel('$(U-B)_o$', fontsize=18)
 ax.minorticks_on()
 ax.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#ax.text(0.67, 0.93, r'$(U-B)_{int}\,<\,0.0$', transform = ax.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
 # Plot ZAMS.
 #plt.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
 plt.plot(bv_o, ub_o, c='k', ls='-')
