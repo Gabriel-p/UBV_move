@@ -62,15 +62,12 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
     # distance value.
     min_dist_indxs = []
     for indx, dist in enumerate(min_dists):
-        
+        # Check if distance star-ZAMS_point is less than this value. This
+        # is considered an 'intersection' between the extinction vector and
+        # the ZAMS.
+        # rectangle.        
         if dist <= 0.01:
             min_dist_indxs.append(dist_m[indx].tolist().index(dist))        
-        
-#        # Check if distance star-ZAMS_point falls inside the star's error
-#        # rectangle.
-#        err_max = np.sqrt(e_bv[indx]**2+e_ub[indx]**2)
-#        if dist <= err_max:
-#            min_dist_indxs.append([dist_m[indx].tolist().index(dist), dist])
         else:
             min_dist_indxs.append(999999)
     
@@ -80,8 +77,7 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
 
 def get_track(ZAMS_file):
 	'''
-	Read the file with the ZAMS to be used. Options are S-K, Girardi-Marigo 
-	and Girardi-PARSEC of a given metallicity.
+	Read the file with the ZAMS to be used.
 	'''
 	bv_o, ub_o, M_abs, sp_type = [], [], [], []
 	with open(ZAMS_file, mode="r") as z_f:
@@ -235,7 +231,7 @@ for indx, star_indxs in enumerate(zams_indxs):
 print 'Distances, spectral types and absolute magnitudes obtained.'
 
 # Generate output data file.
-with open(clust_name+'_stars.dat', "w") as f_out:
+with open(clust_name+'_stars_out.dat', "w") as f_out:
     header = ['#ID','x','y', 'V', 'ev', 'BV', 'ebv', 'UB', 'eub', 'E(B-V)',
               'Mv', 'd(kpc)', 'SP', 'E(B-V)', 'Mv', 'd(kpc)', 'SP', 'E(B-V)',
               'Mv', 'd(kpc)', 'SP', 'E(B-V)', 'Mv', 'd(kpc)', 'SP']
@@ -256,7 +252,7 @@ for indx, id_st in enumerate(id_star):
         lines[indx].append(dist[indx][i])
         lines[indx].append(sp_type_final[indx][i])
 
-with open(clust_name+'_stars.dat', "a") as f_out:
+with open(clust_name+'_stars_out.dat', "a") as f_out:
     for line in lines:
         f_out.write('{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
 {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
@@ -379,136 +375,5 @@ fig.tight_layout()
 # Generate output plot file.
 plt.savefig(clust_name+'_CMD.png', dpi=150)
 print 'Plot 2 created.'
-
-
-
-
-#
-#ax2 = plt.subplot(gs1[0:6, 4:8])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax2.minorticks_on()
-#ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.67, 0.93, r'$0.5\,\leq\,(B-V)_{obs}\,<\,0.75$', transform=ax2.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-## Plot ZAMS.
-#ax2.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax2.plot(track[0], track[1], c='k', ls='-')
-## Plot extinction line.
-#plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#
-#    if 0.5 <= bv_obsrv[indx] < 0.75:
-#        ax2.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax2.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax2.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')
-#                 
-#                 
-#ax3 = plt.subplot(gs1[0:6, 8:12])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax3.minorticks_on()
-#ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.67, 0.93, r'$0.75\,\leq\,(B-V)_{obs}\,<\,1.$', transform=ax3.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-## Plot ZAMS.
-#ax3.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax3.plot(track[0], track[1], c='k', ls='-')
-## Plot extinction line.
-#plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 0.75 <= bv_obsrv[indx] < 1.:
-#        ax3.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax3.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax3.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')                 
-#                 
-#
-#
-#ax4 = plt.subplot(gs1[6:12, 0:4])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax4.minorticks_on()
-#ax4.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.67, 0.93, r'$1.\,\leq\,(B-V)_{obs}\,<\,1.25$', transform=ax4.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-## Plot ZAMS.
-#ax4.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax4.plot(track[0], track[1], c='k', ls='-')
-## Plot extinction line.
-#plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1. <= bv_obsrv[indx] < 1.25:
-#        ax4.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax4.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax4.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-')  
-#
-#
-#ax5 = plt.subplot(gs1[6:12, 4:8])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax5.minorticks_on()
-#ax5.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.67, 0.93, r'$1.25\,\leq\,(B-V)_{obs}\,<\,1.5$', transform=ax5.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-## Plot ZAMS.
-#ax5.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax5.plot(track[0], track[1], c='k', ls='-')
-## Plot extinction line.
-#plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1.25 <= bv_obsrv[indx] < 1.5:
-#        ax5.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax5.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax5.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
-#                 
-#                 
-#ax6 = plt.subplot(gs1[6:12, 8:12])
-#plt.xlim(-0.7, 2.5)
-#plt.ylim(1.7, -1.3)
-#plt.xlabel('(B-V)', fontsize=16)
-#plt.ylabel('(U-B)', fontsize=16)
-#ax6.minorticks_on()
-#ax6.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-#plt.text(0.67, 0.93, r'$1.5\,\leq\,(B-V)_{obs}$', transform=ax6.transAxes,
-#         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-## Plot ZAMS.
-#ax6.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
-#ax6.plot(track[0], track[1], c='k', ls='-')
-## Plot extinction line.
-#plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-## Plot stars.
-#for indx, star in enumerate(bv_intrsc):
-#    if 1.5 <= bv_obsrv[indx]:
-#        ax6.scatter(bv_intrsc[indx], ub_intrsc[indx], c='r', lw=0.5, s=30.)
-#        ax6.errorbar(bv_obsrv[indx], ub_obsrv[indx], yerr=e_ub[indx],
-#                     xerr=e_bv[indx], fmt='.', ms=2., lw=0.3, c='b')    
-#        ax6.plot([bv_intrsc[indx], bv_obsrv[indx]],
-#                 [ub_intrsc[indx], ub_obsrv[indx]], lw=0.3, ls='-') 
-#                 
-#fig.tight_layout()
-#
-## Generate output plot file.
-#plt.savefig('output_CMD.png', dpi=150)
-
 
 print 'End.'
