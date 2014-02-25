@@ -208,7 +208,8 @@ for indx, star_indxs in enumerate(zams_indxs):
             dist_mod = m_obs[indx] - zams_inter[2][ind]
             dist[indx].append(round((10**(0.2*(dist_mod+5-A_v)))/1000., 3))
             # Get spectral type.
-            sp_in = min(range(len(M_abs)), key=lambda i: abs(M_abs[i]-zams_inter[2][ind]))
+            sp_in = min(range(len(M_abs)),
+                        key=lambda i: abs(M_abs[i]-zams_inter[2][ind]))
             sp_type_final[indx].append(sp_type[sp_in])
             # Store extin and dist values.
             ext_dist_all[0].append(extin_list[indx][indx2])
@@ -267,9 +268,9 @@ for indx, id_st in enumerate(id_star):
 
 with open(clust_name+'_stars_out.dat', "a") as f_out:
     for line in lines:
-        f_out.write('{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
+        f_out.write('{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
 {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
-{:>9} {:>9}'.format(*line))
+{:>9} {:>9} {:>9}'.format(*line))
         f_out.write('\n')
         
 print 'Output file generated.'
@@ -299,7 +300,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 1.5, mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
@@ -320,7 +321,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 2., mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
@@ -341,7 +342,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 2.5, mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
@@ -362,7 +363,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 3., mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
@@ -383,7 +384,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 3.5, mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
@@ -404,7 +405,7 @@ plt.ylabel('$E_{(B-V)}$', fontsize=14)
 h_g = gaussian_filter(hist, 4., mode='constant')   
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-np.average(xedges[y_max:y_max + 2])
+np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
