@@ -64,11 +64,12 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
     for indx, dist in enumerate(min_dists):
         # Check if distance star-ZAMS_point is less than this value. This
         # is considered an 'intersection' between the extinction vector and
-        # the ZAMS.
-        # rectangle.        
+        # the ZAMS.        
         if dist <= 0.01:
             min_dist_indxs.append(dist_m[indx].tolist().index(dist))        
         else:
+            # If no point in ZAMS was located near this star shifted this
+            # value of E(B-V), return '999999'.
             min_dist_indxs.append(999999)
     
     return min_dist_indxs
@@ -128,7 +129,8 @@ N = 1000
 bv_col, ub_col, abs_mag = np.linspace(0, 1, len(bv_o)), \
 np.linspace(0, 1, N), np.linspace(0, 1, N)
 # One-dimensional linear interpolation.
-bv_col_i, ub_col_i, abs_mag_i = (np.interp(ub_col, bv_col, zams[i]) for i in range(3))
+bv_col_i, ub_col_i, abs_mag_i = (np.interp(ub_col, bv_col,
+                                           zams[i]) for i in range(3))
 # Store zams' interpolated values.
 zams_inter = np.asarray([bv_col_i, ub_col_i, abs_mag_i])
 print 'ZAMS interpolated.'
@@ -146,13 +148,13 @@ data_file = 'data_input.dat'
 id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = \
 read_input(data_file)
 
-# List that holds index and star-ZAMS_point distances.
-#zams_indx_dist = [[999999, 9999.] for _ in range(len(id_star))]
+# List that holds indexes for points in the interpolated ZAMS.
 zams_indxs = [[] for _ in range(len(id_star))]
-zams_indxs_old = [999999]*len(id_star)
-# Holds the extinction value assigned to each star.
+zams_old = [[9999.]*len(id_star), [9999.]*len(id_star)]
+# Holds the extinction values assigned to each star.
 extin_list = [[] for _ in range(len(id_star))]
 
+print 'Obtaining extinction solutions.'
 # Loop through all extinction values in range.
 for extin in extin_range:
     
@@ -164,17 +166,28 @@ for extin in extin_range:
     # The point must fall inside a small rectangle around the star.
     min_indxs = track_distance(zams_inter, bv_intrsc, ub_intrsc)
 
-    # Compare with distances and indexes obtained with previous E(B-V) value.
-    # The difference between distances is there to prevent stars from passing by
-    # points in the ZAMS because the interpolation is not dense enough.
+    # For each star, check that an intersection point with the ZAMS was
+    # found.
     for indx, n_indx in enumerate(min_indxs):
-        if n_indx != 999999 and abs(n_indx-zams_indxs_old[indx])>20:
-            # Append new value.
-            zams_indxs[indx].append(n_indx)
-            # Udate value.
-            zams_indxs_old[indx] = n_indx
-            extin_list[indx].append(round(extin, 2))
-
+        if n_indx != 999999:
+        # If the star was positioned over the ZAMS, see that this new position
+        # is significantly different from the previous one. If it is, store
+        # this extinction value as a new solution for the star. Otherwise
+        # the new value is discarded as an interpolating point in the ZAMS
+        # very close to the previous one.
+            dist = np.sqrt((zams_old[0][indx]-zams_inter[0][n_indx])**2 + \
+            (zams_old[1][indx]-zams_inter[1][n_indx])**2)
+            if dist>0.1:
+                # Append new value.
+                zams_indxs[indx].append(n_indx)
+                # Udate value.
+                zams_old[0][indx] = zams_inter[0][n_indx]
+                zams_old[1][indx] = zams_inter[1][n_indx]
+                # Store extinction value solution.
+                extin_list[indx].append(round(extin, 2))
+                
+    print ' %0.2f done' % extin
+                
 print 'Extinction range processed.'
 
 # Lists for plotting.
@@ -191,7 +204,7 @@ for indx, star_indxs in enumerate(zams_indxs):
         for indx2, ind in enumerate(star_indxs):
             M_abs_final[indx].append(round(zams_inter[2][ind], 3))
             # Calculate distance.
-            A_v = 3.1*extin
+            A_v = 3.1*extin_list[indx][indx2]
             dist_mod = m_obs[indx] - zams_inter[2][ind]
             dist[indx].append(round((10**(0.2*(dist_mod+5-A_v)))/1000., 3))
             # Get spectral type.
@@ -263,6 +276,7 @@ print 'Output file generated.'
 
 # Plots.
 print 'Creating output plots.'
+
 fig = plt.figure(figsize=(10, 10)) # create the top-level container
 
 hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0], bins=100)
@@ -284,7 +298,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax2 = fig.add_subplot(222)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, extin_max)
+plt.ylim(0, max(ext_dist_all[0]))
 plt.xlabel('Dist (kpc)', fontsize=10)
 plt.ylabel('$E_{(B-V)}$', fontsize=12)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -297,7 +311,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax3 = fig.add_subplot(223)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, extin_max)
+plt.ylim(0, max(ext_dist_all[0]))
 plt.xlabel('Dist (kpc)', fontsize=10)
 plt.ylabel('$E_{(B-V)}$', fontsize=12)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -310,7 +324,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax4 = fig.add_subplot(224)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, extin_max)
+plt.ylim(0, max(ext_dist_all[0]))
 plt.xlabel('Dist (kpc)', fontsize=10)
 plt.ylabel('$E_{(B-V)}$', fontsize=12)
 # H_g is the 2D histogram with a gaussian filter applied
