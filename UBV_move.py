@@ -5,6 +5,7 @@ Created on Thu Nov 14 17:02:23 2013
 @author: gabriel
 """
 
+import sys
 import numpy as np
 import scipy.spatial.distance as sp
 import matplotlib.pyplot as plt
@@ -111,10 +112,15 @@ star over a given ZAMS thus obtaining its parameters: extinction, distance,
 absolute magnitude and spectral type.
 '''
 
-# Get name, max extinction and distance (this last value for plotting)
-clust_name = str(raw_input('Cluster name: '))
-extin_max = float(raw_input('Max E(B-V): '))
-d_max = float(raw_input('Max distance (kpc): '))
+if len(sys.argv) == 2:
+    clust_name, extin_max = str(sys.argv[1]), 4.
+elif len(sys.argv) == 3:
+    clust_name, extin_max = str(sys.argv[1]), float(sys.argv[2])
+else:
+    clust_name, extin_max = 'cluster', 4.
+    
+print clust_name, extin_max
+
 # Define range for E(B-V) value.
 extin_range = np.arange(0, extin_max, 0.01)
 
@@ -191,7 +197,8 @@ for extin in extin_range:
 print 'Extinction range processed.'
 
 # Lists for plotting.
-bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq = [], [], [], []
+bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq = [[], [], [], []], \
+[[], [], [], []], [], []
 # Generate final lists for writing to file.
 M_abs_final = [[] for _ in range(len(id_star))]
 sp_type_final = [[] for _ in range(len(id_star))]
@@ -217,8 +224,10 @@ for indx, star_indxs in enumerate(zams_indxs):
             
     # Identify stars with a unique solution for plotting.
     if len(star_indxs)==1:
-        bv_obs_uniq.append([bv_obsrv[indx], e_bv[indx]])
-        ub_obs_uniq.append([ub_obsrv[indx], e_ub[indx]])
+        bv_obs_uniq[0].append(bv_obsrv[indx])
+        bv_obs_uniq[1].append(e_bv[indx])
+        ub_obs_uniq[0].append(ub_obsrv[indx])
+        ub_obs_uniq[1].append(e_ub[indx])
         bv_intrsc, ub_intrsc = intrsc_values(bv_obsrv[indx], ub_obsrv[indx],
                                              extin_list[indx][0])
         # Corrected values.
@@ -286,8 +295,11 @@ fig = plt.figure(figsize=(20, 10)) # create the top-level container
 #    ...:     ax.set_xlabel('Label_x')
 #    ...:     ax.set_ylabel('Label_y')
 
+# Maximum distance value in axis.
+d_max = np.sort(ext_dist_all[1])[int(0.9*len(ext_dist_all[1]))]
+
 hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0],
-                                      bins=500)
+                       bins=[int(d_max/0.002), int(max(ext_dist_all[0])/0.005)])
 
 # Plot density map.
 ax1 = fig.add_subplot(231)
@@ -421,33 +433,33 @@ plt.savefig(clust_name+'_dens_map.png', dpi=150)
 print 'Plot 1 created.'
 
 
-fig = plt.figure(figsize=(20, 10)) # create the top-level container
+fig = plt.figure(figsize=(30, 10)) # create the top-level container
 
-ax = fig.add_subplot(121)
+ax1 = fig.add_subplot(131)
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.3)
 plt.xlabel('$(B-V)_o$', fontsize=18)
 plt.ylabel('$(U-B)_o$', fontsize=18)
-ax.minorticks_on()
-ax.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+ax1.minorticks_on()
+ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 # Plot ZAMS.
 #plt.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
 plt.plot(bv_o, ub_o, c='k', ls='-')
 # Plot extinction line.
 plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-# Plot stars with unique solutions.
+# Plot all observed stars.
 plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, s=10.)
 
 
-ax = fig.add_subplot(122)
+ax2 = fig.add_subplot(132)
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.3)
 plt.xlabel('$(B-V)_o$', fontsize=18)
 plt.ylabel('$(U-B)_o$', fontsize=18)
-ax.minorticks_on()
-ax.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-ax.text(0.67, 0.93, '$E_{(B-V)}^{max}\,=\,%0.2f$' % extin_max,
-        transform = ax.transAxes, bbox=dict(facecolor='white', alpha=0.85),
+ax2.minorticks_on()
+ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+ax2.text(0.67, 0.93, '$E_{(B-V)}^{max}\,=\,%0.2f$' % extin_max,
+        transform = ax2.transAxes, bbox=dict(facecolor='white', alpha=0.85),
         fontsize=18)
 # Plot ZAMS.
 #plt.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
@@ -455,16 +467,47 @@ plt.plot(bv_o, ub_o, c='k', ls='-')
 # Plot extinction line.
 plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
 # Plot stars with unique solutions.
-for indx, star in enumerate(bv_int_uniq):
-    plt.scatter(bv_int_uniq[indx], ub_int_uniq[indx], c='r', lw=0.5, s=30.)
-    
-    plt.errorbar(bv_obs_uniq[indx][0], ub_obs_uniq[indx][0],
-                 yerr=ub_obs_uniq[indx][1], xerr=bv_obs_uniq[indx][1], fmt='.',
-                 ms=2., lw=0.3, c='b')
-                 
-    plt.plot([bv_int_uniq[indx], bv_obs_uniq[indx][0]],
-             [ub_int_uniq[indx], ub_obs_uniq[indx][0]], lw=0.3, ls='-')
-                 
+#for indx, star in enumerate(bv_int_uniq):
+# Plot error bars.
+plt.errorbar(bv_obs_uniq[0], ub_obs_uniq[0],
+             yerr=ub_obs_uniq[1], xerr=bv_obs_uniq[1], fmt='.',
+             ms=2., lw=0.3, c='b')
+# Plot corrected stars with unique solutions.
+plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, s=30.)
+# Plot extinction lines.
+plt.plot([bv_int_uniq, bv_obs_uniq[0]],
+         [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
+         
+              
+ax3 = fig.add_subplot(133)
+plt.xlim(-0.7, 2.5)
+plt.ylim(1.7, -1.3)
+plt.xlabel('$(B-V)_o$', fontsize=18)
+plt.ylabel('$(U-B)_o$', fontsize=18)
+ax3.minorticks_on()
+ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+text1 = '$E_{(B-V)}\,=\,%0.2f\pm 0.2$' '\n' % ebv_m
+text2 = '$dist\,=\,%0.2f\pm 0.2$' % d_m
+text = text1 + text2
+ax3.text(0.67, 0.93, text, transform = ax3.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+# Plot ZAMS.
+plt.plot(bv_o, ub_o, c='k', ls='-')
+# Plot extinction line.
+plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+# Plot probable cluster stars.
+temp = [[], []]
+for indx, bv_star in enumerate(bv_obsrv):
+    for i in range(4):
+        if type(extin_list[indx][i]) is float and type(dist[indx][i]) is float:
+            if abs(extin_list[indx][i] - ebv_m) <= 0.2 and \
+            abs(dist[indx][i] - d_m) <= 0.2:
+                temp[0].append(bv_star)
+                temp[1].append(ub_obsrv[indx])
+            
+plt.scatter(temp[0], temp[1], c='b', lw=0.5, s=20.)
+           
+              
 fig.tight_layout()
 # Generate output plot file.
 plt.savefig(clust_name+'_CMD.png', dpi=150)
