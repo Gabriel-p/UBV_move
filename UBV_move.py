@@ -25,11 +25,10 @@ def intrsc_values(bv_obsrv, ub_obsrv, e_bv):
     # E(U-B) = (U-B) - (U-B)o
     #
     bv_intrsc = np.array(bv_obsrv) - e_bv
-    e_ub = 0.72*e_bv + 0.05*e_bv**2
+    e_ub = 0.72 * e_bv + 0.05 * e_bv ** 2
     ub_intrsc = np.array(ub_obsrv) - e_ub
 
     return bv_intrsc, ub_intrsc
-    
 
 
 def track_distance(zams_inter, bv_intrsc, ub_intrsc):
@@ -48,46 +47,45 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
     # dist_m = [[star_1], [star_2], ..., [star_N]]
     # [star_i] = [dist_1, dist_2, ..., dist_M]
     dist_m = np.array(sp.cdist(zip(*bv_ub), zip(*zams_inter[:2]), 'euclidean'))
-                
+
     # Identify the position of the closest point in track for each star and
     # save the distance to it.
     min_dists = dist_m.min(axis=1)
-    
+
     # Save index of closest point in ZAMS to each star along with the
     # distance value.
     min_dist_indxs = []
     for indx, dist in enumerate(min_dists):
         # Check if distance star-ZAMS_point is less than this value. This
         # is considered an 'intersection' between the extinction vector and
-        # the ZAMS.        
+        # the ZAMS.
         if dist <= 0.01:
-            min_dist_indxs.append(dist_m[indx].tolist().index(dist))        
+            min_dist_indxs.append(dist_m[indx].tolist().index(dist))
         else:
             # If no point in ZAMS was located near this star shifted this
             # value of E(B-V), return '999999'.
             min_dist_indxs.append(999999)
-    
+
     return min_dist_indxs
 
 
-
 def get_track(ZAMS_file):
-	'''
-	Read the file with the ZAMS to be used.
-	'''
-	bv_o, ub_o, M_abs, sp_type = [], [], [], []
-	with open(ZAMS_file, mode="r") as z_f:
-	    for line in z_f:
-	        li=line.strip()
-	        # Jump comments.
-	        if not li.startswith("#"):
-	            reader = li.split()           
-	            bv_o.append(float(reader[2]))
-	            ub_o.append(float(reader[1]))
-	            M_abs.append(float(reader[3]))
-	            sp_type.append(str(reader[0]))
+    '''
+    Read the file with the ZAMS to be used.
+    '''
+    bv_o, ub_o, M_abs, sp_type = [], [], [], []
+    with open(ZAMS_file, mode="r") as z_f:
+        for line in z_f:
+            li = line.strip()
+            # Jump comments.
+            if not li.startswith("#"):
+                reader = li.split()
+                bv_o.append(float(reader[2]))
+                ub_o.append(float(reader[1]))
+                M_abs.append(float(reader[3]))
+                sp_type.append(str(reader[0]))
 
-	return bv_o, ub_o, M_abs, sp_type
+    return bv_o, ub_o, M_abs, sp_type
 
 
 def read_input(data_file):
@@ -101,9 +99,8 @@ def read_input(data_file):
     id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, =\
     data[0], data[1], data[2], data[3], data[4], data[5], \
     data[6], data[7], data[8]
-    
-    return id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub
 
+    return id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub
 
 
 '''
@@ -118,7 +115,7 @@ elif len(sys.argv) == 3:
     clust_name, extin_max = str(sys.argv[1]), float(sys.argv[2])
 else:
     clust_name, extin_max = 'cluster', 4.
-    
+
 print clust_name, extin_max
 
 # Define range for E(B-V) value.
@@ -147,7 +144,7 @@ print 'ZAMS interpolated.'
 #    for line in zip(*zams_inter):
 #        f_out.write('{:<9} {:>9} {:>9}'.format(*line))
 #        f_out.write('\n')
-        
+
 
 # Get input data from file.
 data_file = 'data_input.dat'
@@ -156,20 +153,20 @@ read_input(data_file)
 
 # List that holds indexes for points in the interpolated ZAMS.
 zams_indxs = [[] for _ in range(len(id_star))]
-zams_old = [[9999.]*len(id_star), [9999.]*len(id_star)]
+zams_old = [[9999.] * len(id_star), [9999.] * len(id_star)]
 # Holds the extinction values assigned to each star.
 extin_list = [[] for _ in range(len(id_star))]
 
 print 'Obtaining extinction solutions.'
 # Loop through all extinction values in range.
 for extin in extin_range:
-    
+
     # Get intrinsec values for both colors with this extinction value.
     bv_intrsc, ub_intrsc = intrsc_values(bv_obsrv, ub_obsrv, extin)
-    
+
     # For each star in its intrinsic position find the point in the ZAMS closest
-    # to it and store that point's index in the ZAMS and the distance star-point.
-    # The point must fall inside a small rectangle around the star.
+    # to it and store that point's index in the ZAMS and the distance
+    # star-point. The point must fall inside a small rectangle around the star.
     min_indxs = track_distance(zams_inter, bv_intrsc, ub_intrsc)
 
     # For each star, check that an intersection point with the ZAMS was
@@ -181,9 +178,9 @@ for extin in extin_range:
         # this extinction value as a new solution for the star. Otherwise
         # the new value is discarded as an interpolating point in the ZAMS
         # very close to the previous one.
-            dist = np.sqrt((zams_old[0][indx]-zams_inter[0][n_indx])**2 + \
-            (zams_old[1][indx]-zams_inter[1][n_indx])**2)
-            if dist>0.1:
+            dist = np.sqrt((zams_old[0][indx] - zams_inter[0][n_indx]) ** 2 +
+            (zams_old[1][indx] - zams_inter[1][n_indx]) ** 2)
+            if dist > 0.1:
                 # Append new value.
                 zams_indxs[indx].append(n_indx)
                 # Udate value.
@@ -191,9 +188,9 @@ for extin in extin_range:
                 zams_old[1][indx] = zams_inter[1][n_indx]
                 # Store extinction value solution.
                 extin_list[indx].append(round(extin, 2))
-                
+
     print ' %0.2f done' % extin
-                
+
 print 'Extinction range processed.'
 
 # Lists for plotting.
@@ -206,24 +203,26 @@ dist = [[] for _ in range(len(id_star))]
 ext_dist_all = [[], []]
 
 for indx, star_indxs in enumerate(zams_indxs):
-    
-    if star_indxs and len(star_indxs)<=4:
+
+    if star_indxs and len(star_indxs) <= 4:
         for indx2, ind in enumerate(star_indxs):
             M_abs_final[indx].append(round(zams_inter[2][ind], 3))
             # Calculate distance.
-            A_v = 3.1*extin_list[indx][indx2]
+            A_v = 3.1 * extin_list[indx][indx2]
             dist_mod = m_obs[indx] - zams_inter[2][ind]
-            dist[indx].append(round((10**(0.2*(dist_mod+5-A_v)))/1000., 3))
+            dist[indx].append(round((10 ** (0.2 * (dist_mod + 5 - A_v))) /
+            1000., 3))
             # Get spectral type.
             sp_in = min(range(len(M_abs)),
-                        key=lambda i: abs(M_abs[i]-zams_inter[2][ind]))
+                        key=lambda i: abs(M_abs[i] - zams_inter[2][ind]))
             sp_type_final[indx].append(sp_type[sp_in])
             # Store extin and dist values.
             ext_dist_all[0].append(extin_list[indx][indx2])
-            ext_dist_all[1].append(round((10**(0.2*(dist_mod+5-A_v)))/1000., 3))
-            
+            ext_dist_all[1].append(round((10 ** (0.2 * (dist_mod + 5 - A_v))) /
+            1000., 3))
+
     # Identify stars with a unique solution for plotting.
-    if len(star_indxs)==1:
+    if len(star_indxs) == 1:
         bv_obs_uniq[0].append(bv_obsrv[indx])
         bv_obs_uniq[1].append(e_bv[indx])
         ub_obs_uniq[0].append(ub_obsrv[indx])
@@ -233,16 +232,16 @@ for indx, star_indxs in enumerate(zams_indxs):
         # Corrected values.
         bv_int_uniq.append(bv_intrsc)
         ub_int_uniq.append(ub_intrsc)
-            
+
     # Fill empty solutions with '--'.
-    if len(star_indxs)<4:
-        for _ in range(4-len(star_indxs)):
+    if len(star_indxs) < 4:
+        for _ in range(4 - len(star_indxs)):
             M_abs_final[indx].append('--')
             sp_type_final[indx].append('--')
             dist[indx].append('--')
             extin_list[indx].append('--')
-           
-    if len(star_indxs)>4:
+
+    if len(star_indxs) > 4:
         print 'Star with too many solutions (>4):', id_star[indx],\
         extin_list[indx]
         for i in range(4):
@@ -254,15 +253,15 @@ for indx, star_indxs in enumerate(zams_indxs):
 print 'Distances, spectral types and absolute magnitudes obtained.'
 
 # Generate output data file.
-with open(clust_name+'_stars_out.dat', "w") as f_out:
-    header = ['#ID','x','y', 'V', 'ev', 'BV', 'ebv', 'UB', 'eub', 'E(B-V)',
+with open(clust_name + '_stars_out.dat', "w") as f_out:
+    header = ['#ID', 'x', 'y', 'V', 'ev', 'BV', 'ebv', 'UB', 'eub', 'E(B-V)',
               'Mv', 'd(kpc)', 'SP', 'E(B-V)', 'Mv', 'd(kpc)', 'SP', 'E(B-V)',
               'Mv', 'd(kpc)', 'SP', 'E(B-V)', 'Mv', 'd(kpc)', 'SP']
     f_out.write('{:<8}{:>11}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}\
 {:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}{:>10}\
 {:>10}{:>10}'.format(*header))
     f_out.write('\n')
-    
+
 lines = [[] for _ in range(len(id_star))]
 for indx, id_st in enumerate(id_star):
     line = [id_star[indx], x_star[indx], y_star[indx], m_obs[indx],
@@ -275,32 +274,33 @@ for indx, id_st in enumerate(id_star):
         lines[indx].append(dist[indx][i])
         lines[indx].append(sp_type_final[indx][i])
 
-with open(clust_name+'_stars_out.dat', "a") as f_out:
+with open(clust_name + '_stars_out.dat', "a") as f_out:
     for line in lines:
         f_out.write('{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
 {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} \
 {:>9} {:>9} {:>9}'.format(*line))
         f_out.write('\n')
-        
+
 print 'Output file generated.'
 
 # Plots.
 print 'Creating output plots.'
 
-fig = plt.figure(figsize=(20, 10)) # create the top-level container
+fig = plt.figure(figsize=(20, 10))  # create the top-level container
 #fig, axes = plt.subplots(2, 2)
-#    ...: for ax in axes.ravel(): #ravel axes to a flattened array 
+#    ...: for ax in axes.ravel(): #ravel axes to a flattened array
 #    ...:     ax.set_xlim(0, 10)
 #    ...:     ax.set_ylim(0, 20)
 #    ...:     ax.set_xlabel('Label_x')
 #    ...:     ax.set_ylabel('Label_y')
 
 # Maximum distance value in axis.
-d_max = np.sort(ext_dist_all[1])[int(0.9*len(ext_dist_all[1]))]
-e_max = np.sort(ext_dist_all[0])[int(0.9*len(ext_dist_all[0]))]
+d_max = np.sort(ext_dist_all[1])[int(0.9 * len(ext_dist_all[1]))]
+e_max = np.sort(ext_dist_all[0])[int(0.9 * len(ext_dist_all[0]))]
 
 hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0],
-                       bins=[int(d_max/0.002), int(max(ext_dist_all[0])/0.005)])
+                       bins=[int(d_max / 0.002),
+                           int(max(ext_dist_all[0]) / 0.005)])
 
 # Plot density map.
 ax1 = fig.add_subplot(231)
@@ -317,12 +317,12 @@ np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax1.text(0.7, 0.85, text, transform = ax1.transAxes,
-         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)    
+ax1.text(0.7, 0.85, text, transform=ax1.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
-           
+
 # Plot density map.
 ax2 = fig.add_subplot(232)
 # Axis limits.
@@ -338,10 +338,10 @@ np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax2.text(0.7, 0.85, text, transform = ax2.transAxes,
-         bbox=dict(facecolor='white', alpha=0.85), fontsize=14) 
+ax2.text(0.7, 0.85, text, transform=ax2.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
 
 # Plot density map.
@@ -359,12 +359,12 @@ np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax3.text(0.7, 0.85, text, transform = ax3.transAxes,
-         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)      
+ax3.text(0.7, 0.85, text, transform=ax3.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
-           
+
 # Plot density map.
 ax4 = fig.add_subplot(234)
 # Axis limits.
@@ -380,12 +380,12 @@ np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax4.text(0.7, 0.85, text, transform = ax4.transAxes,
-         bbox=dict(facecolor='white', alpha=0.85), fontsize=14) 
+ax4.text(0.7, 0.85, text, transform=ax4.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
-           
+
 # Plot density map.
 ax5 = fig.add_subplot(235)
 # Axis limits.
@@ -401,12 +401,12 @@ np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax5.text(0.7, 0.85, text, transform = ax5.transAxes,
-         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)  
+ax5.text(0.7, 0.85, text, transform=ax5.transAxes,
+         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
-           
+
 # Plot density map.
 ax6 = fig.add_subplot(236)
 # Axis limits.
@@ -415,32 +415,32 @@ plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
-h_g = gaussian_filter(hist, 4., mode='constant')   
+h_g = gaussian_filter(hist, 4., mode='constant')
 x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
 d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
 np.average(yedges[y_max:y_max + 2])
 text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
 text2 = '$dist^{max}\,=\,%0.2f$' % d_m
 text = text1 + text2
-ax6.text(0.7, 0.85, text, transform = ax6.transAxes,
+ax6.text(0.7, 0.85, text, transform=ax6.transAxes,
          bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
 plt.imshow(h_g.transpose(), origin='lower',
-           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],\
+           extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
            cmap=plt.get_cmap('jet'), aspect='auto')
-           
+
 fig.tight_layout()
 # Generate output plot file.
-plt.savefig(clust_name+'_dens_map.png', dpi=150)
+plt.savefig(clust_name + '_dens_map.png', dpi=150)
 print 'Plot 1 created.'
 
 
-fig = plt.figure(figsize=(30, 10)) # create the top-level container
+fig = plt.figure(figsize=(30, 10))  # create the top-level container
 
 ax1 = fig.add_subplot(131)
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.3)
-plt.xlabel('$(B-V)_o$', fontsize=18)
-plt.ylabel('$(U-B)_o$', fontsize=18)
+plt.xlabel('$(B-V)$', fontsize=18)
+plt.ylabel('$(U-B)$', fontsize=18)
 ax1.minorticks_on()
 ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 # Plot ZAMS.
@@ -455,12 +455,12 @@ plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, s=10.)
 ax2 = fig.add_subplot(132)
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.3)
-plt.xlabel('$(B-V)_o$', fontsize=18)
-plt.ylabel('$(U-B)_o$', fontsize=18)
+plt.xlabel('$(B-V)$', fontsize=18)
+plt.ylabel('$(U-B)$', fontsize=18)
 ax2.minorticks_on()
 ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 ax2.text(0.67, 0.93, '$E_{(B-V)}^{max}\,=\,%0.2f$' % extin_max,
-        transform = ax2.transAxes, bbox=dict(facecolor='white', alpha=0.85),
+        transform=ax2.transAxes, bbox=dict(facecolor='white', alpha=0.85),
         fontsize=18)
 # Plot ZAMS.
 #plt.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
@@ -478,19 +478,19 @@ plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, s=30.)
 # Plot extinction lines.
 plt.plot([bv_int_uniq, bv_obs_uniq[0]],
          [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
-         
-              
+
+
 ax3 = fig.add_subplot(133)
 plt.xlim(-0.7, 2.5)
 plt.ylim(1.7, -1.3)
-plt.xlabel('$(B-V)_o$', fontsize=18)
-plt.ylabel('$(U-B)_o$', fontsize=18)
+plt.xlabel('$(B-V)$', fontsize=18)
+plt.ylabel('$(U-B)$', fontsize=18)
 ax3.minorticks_on()
 ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
 text1 = '$E_{(B-V)}\,=\,%0.2f\pm 0.2$' '\n' % ebv_m
 text2 = '$dist\,=\,%0.2f\pm 0.2$' % d_m
 text = text1 + text2
-ax3.text(0.67, 0.93, text, transform = ax3.transAxes,
+ax3.text(0.67, 0.93, text, transform=ax3.transAxes,
          bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
 # Plot ZAMS.
 plt.plot(bv_o, ub_o, c='k', ls='-')
@@ -505,13 +505,13 @@ for indx, bv_star in enumerate(bv_obsrv):
             abs(dist[indx][i] - d_m) <= 0.2:
                 temp[0].append(bv_star)
                 temp[1].append(ub_obsrv[indx])
-            
+
 plt.scatter(temp[0], temp[1], c='b', lw=0.5, s=20.)
-           
-              
+
+
 fig.tight_layout()
 # Generate output plot file.
-plt.savefig(clust_name+'_CMD.png', dpi=150)
+plt.savefig(clust_name + '_CMD.png', dpi=150)
 print 'Plot 2 created.'
 
 print 'End.'
