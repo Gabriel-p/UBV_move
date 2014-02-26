@@ -297,6 +297,7 @@ fig = plt.figure(figsize=(20, 10)) # create the top-level container
 
 # Maximum distance value in axis.
 d_max = np.sort(ext_dist_all[1])[int(0.9*len(ext_dist_all[1]))]
+e_max = np.sort(ext_dist_all[0])[int(0.9*len(ext_dist_all[0]))]
 
 hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0],
                        bins=[int(d_max/0.002), int(max(ext_dist_all[0])/0.005)])
@@ -305,7 +306,7 @@ hist, xedges, yedges = np.histogram2d(ext_dist_all[1], ext_dist_all[0],
 ax1 = fig.add_subplot(231)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -326,7 +327,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax2 = fig.add_subplot(232)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -347,7 +348,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax3 = fig.add_subplot(233)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -368,7 +369,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax4 = fig.add_subplot(234)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -389,7 +390,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax5 = fig.add_subplot(235)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
@@ -410,7 +411,7 @@ plt.imshow(h_g.transpose(), origin='lower',
 ax6 = fig.add_subplot(236)
 # Axis limits.
 plt.xlim(0, d_max)
-plt.ylim(0, max(ext_dist_all[0]))
+plt.ylim(0, e_max)
 plt.xlabel('Dist (kpc)', fontsize=12)
 plt.ylabel('$E_{(B-V)}$', fontsize=14)
 # H_g is the 2D histogram with a gaussian filter applied
