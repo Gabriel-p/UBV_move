@@ -6,4 +6,6 @@ We use an interpolated Schmidt-Kaler ZAMS and the usual extinction law.
 
 Dirty code, definitely needs improvement. Works nonetheless.
 
-![Output](/out.png "Example output image")
+![Output 1](/out1.png "Example first output image")
+
+![Output 2](/out2.png "Example second output image")
