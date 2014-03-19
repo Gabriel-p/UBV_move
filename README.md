@@ -4,6 +4,12 @@ UBV-Move
 Moves stars in a UBV color-color diagram to their intrinsic position over a given ZAMS.
 We use an interpolated Schmidt-Kaler ZAMS and the usual extinction law.
 
+The code stores all possible solutions for each observed star, ie: all extinction values
+that move the star over the ZAMS according to the reddening line. Each solution positions
+the star at a given distance. The density map shows *all* the possible solutions for
+*all* the observed stars and interprets the maximum value as the most probable extinction
+and distance associated to the (putative) cluster.
+
 Dirty code, definitely needs improvement. Works nonetheless.
 
 ![Output 1](/out1.png "Example first output image")
@@ -13,4 +19,4 @@ value in the density map (see below)
 
 ![Output 2](/out2.png "Example second output image")
 **Fig. 2** Density map of extinction vs distances values showing all possible solutions
-for all the oberved stars.
+for all the observed stars.
