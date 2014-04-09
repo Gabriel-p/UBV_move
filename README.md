@@ -45,12 +45,12 @@ is the name assigned when calling the code) with all the solutions found for eac
 which includes extinction, distances, absolute magnitudes and spectral types.
 
 Two figures are also created, the first one is called `clust_name_dens_map.png`,
-see **Fig. 1*, and shows a density map of all the extinction and distance values found
+see **Fig. 1**, and shows a density map of all the extinction and distance values found
 for all the observed stars in the CMD in various bin sizes. The maximum density value is
 displayed and assumed as the most likely extinction and distance values for the cluster.
 
 ![Output 1](/out1.png "Example density map.")
-**Fig. 2** Density map of extinction vs distances values showing all possible solutions
+**Fig. 1** Density map of extinction vs distances values showing all possible solutions
 for all the observed stars.
 
 The second figure is called `clust_name_CMD.png`, see **Fig. 2**, and shows the observed
@@ -60,7 +60,7 @@ including extinction and distance values within a given range of the most likely
 and distance values assumed for the cluster (right).
 
 ![Output 2](/out2.png "Example CMDs.")
-**Fig. 1** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
+**Fig. 2** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
 *Right*: Only stars with distance and extinction values close to the maximum density
 value in the density map (see below)
 
