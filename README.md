@@ -21,8 +21,7 @@ follow the order:
 
     ID x  y  mag  e_mag bv  e_bv ub  e_ub
 
-Running
-________
+## Running
 
 From terminal the code can be executed with the command:
 
@@ -32,8 +31,7 @@ Alternatively you can also pass a name for the cluster and a maximum value of `E
 
     python UBV_move.py NGC001 3.5
 
-Output
-________
+## Output
 
 ![Output 1](/out1.png "Example first output image")
 **Fig. 1** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
