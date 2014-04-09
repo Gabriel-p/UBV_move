@@ -12,6 +12,29 @@ and distance associated to the (putative) cluster.
 
 Dirty code, definitely needs improvement. Works nonetheless.
 
+Data input
+________
+
+The code expects an input photometric data file named `data_input.dat` to exist in the
+same folder where the code is located. The format of the columsn in the file should
+follow the order:
+
+    ID x  y  mag  e_mag bv  e_bv ub  e_ub
+
+Running
+________
+
+From terminal the code can be executed with the command:
+
+    python UBV_move.py
+
+Alternatively you can also pass a name for the cluster and a maximum value of `E(B-V)` extinction to be used  with:
+
+    python UBV_move.py NGC001 3.5
+
+Output
+________
+
 ![Output 1](/out1.png "Example first output image")
 **Fig. 1** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
 *Right*: Only stars with distance and extinction values close to the maximum density
