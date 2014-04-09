@@ -2,7 +2,8 @@ UBV-Move
 =============
 
 Moves stars in a UBV color-color diagram to their intrinsic position over a given ZAMS.
-Uses an interpolated Schmidt-Kaler ZAMS and the standard extinction law:
+Uses an interpolated [Schmidt-Kaler (1982)](http://www.fcaglp.unlp.edu.ar/~egiorgi/cumulos/herramientas/tracks/zams.txt)
+ZAMS and the standard extinction law:
 
     E(U-B) = 0.72*E(B-V) + 0.05*E(B-V) ** 2
 
@@ -62,5 +63,5 @@ and distance values assumed for the cluster (right).
 ![Output 2](/out2.png "Example CMDs.")
 **Fig. 2** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
 *Right*: Only stars with distance and extinction values close to the maximum density
-value in the density map (see below)
+value in the density map.
 
