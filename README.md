@@ -20,6 +20,8 @@ follow the order:
 
     ID x  y  mag  e_mag  bv  e_bv  ub  e_ub
 
+Any extra columns will be ignored.
+
 ### Running
 
 From terminal the code can be executed with the command:
