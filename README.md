@@ -12,8 +12,7 @@ and distance associated to the (putative) cluster.
 
 Dirty code, definitely needs improvement. Works nonetheless.
 
-Data input
-________
+### Data input
 
 The code expects an input photometric data file named `data_input.dat` to exist in the
 same folder where the code is located. The format of the columsn in the file should
