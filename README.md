@@ -18,7 +18,7 @@ The code expects an input photometric data file named `data_input.dat` to exist 
 same folder where the code is located. The format of the columns in the file should
 follow the order:
 
-    ID x  y  mag  e_mag bv  e_bv ub  e_ub
+    ID x  y  mag  e_mag  bv  e_bv  ub  e_ub
 
 ### Running
 
@@ -30,14 +30,17 @@ Alternatively you can also pass a name for the cluster and a maximum value of `E
 
     python UBV_move.py NGC001 3.5
 
+If no name or maximum extinction value are passed the code will assume "cluster" and 4.
+respectively by default.
+
 ### Output
 
 The code outputs a text file called `clust_name_stars_out.dat` (where `clust_name`)
 is the name assigned when calling the code) with all the extinction solutions found for each star along with their resolved distances, absolute magnitudes and spectral types.
 
-Two figures are also created: `out1.png`, see *Fig. 1*, which shows the observed CMD, the new positions of stars over the ZAMS (only for those stars with a unique solution) and
+Two figures are also created: `out1.png`, see **Fig. 1**, which shows the observed CMD, the new positions of stars over the ZAMS (only for those stars with a unique solution) and
 `out2.png` which shows a density map of all the extinction and distance values found for
-all the observed stars in the CMD in various bin sizes, see *Fig. 2*.
+all the observed stars in the CMD in various bin sizes, see **Fig. 2**.
 
 ![Output 1](/out1.png "Example first output image")
 **Fig. 1** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
