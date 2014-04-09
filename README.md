@@ -26,7 +26,7 @@ Any extra columns will be ignored.
 
 ### Running
 
-From terminal the code can be executed with the command:
+From a terminal the code can be executed with the command:
 
     python UBV_move.py
 
@@ -35,23 +35,23 @@ extinction to be used  with:
 
     python UBV_move.py NGC001 3.5
 
-If no name or maximum extinction value are passed the code will assume "cluster" and 4.
+If no name or maximum extinction value are passed the code will assume `cluster` and `4.`
 respectively by default.
 
 ### Output
 
-The code outputs a text file called `clust_name_stars_out.dat` (where `clust_name`
+The code outputs a text file named `clust_name_stars_out.dat` (where `clust_name`
 is the name assigned when calling the code) with all the solutions found for each star
 which includes extinction, distances, absolute magnitudes and spectral types.
 
-Two figures are also created, the first one is called `clust_name_dens_map.png`,
+Two figures are also created, the first one is `clust_name_dens_map.png`,
 see **Fig. 1**, and shows a density map of all the extinction and distance values found
 for all the observed stars in the CMD in various bin sizes. The maximum density value is
 displayed and assumed as the most likely extinction and distance values for the cluster.
 
 ![Output 1](/out1.png "Example density map.")
-**Fig. 1** Density map of extinction vs distances values showing all possible solutions
-for all the observed stars.
+**Fig. 1** *Density map of extinction vs distances values showing all possible solutions
+for all the observed stars.*
 
 The second figure is called `clust_name_CMD.png`, see **Fig. 2**, and shows the observed
 CMD (left), the new positions of stars over the ZAMS (center, only for those stars with
@@ -60,7 +60,7 @@ including extinction and distance values within a given range of the most likely
 and distance values assumed for the cluster (right).
 
 ![Output 2](/out2.png "Example CMDs.")
-**Fig. 2** *Left*: Observed cluster. *Center*: Corrected stars placed over main sequence.
-*Right*: Only stars with distance and extinction values close to the maximum density
-value in the density map.
+**Fig. 2** *Left: CMD of observed cluster. Center: Stars with unique solutions placed over
+the main sequence. Right: Only stars with distance and extinction values close to the
+maximum density value in the density map.*
 
