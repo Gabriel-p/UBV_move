@@ -212,15 +212,13 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
     plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
     # Plot probable cluster stars.
     temp = [[], []]
-    for indx, bv_star in enumerate(bv_obsrv):
-        for i in range(4):
-            if type(extin_list[indx][i]) is float and\
-                    type(dist[indx][i]) is float:
-                if abs(extin_list[indx][i] - ebv_m) <= 0.2 and \
-                        abs(dist[indx][i] - d_m) <= 0.2:
+    for bv_star, ub_star, ext_star, dist_star in zip(*[
+            bv_obsrv, ub_obsrv, extin_list, dist]):
+        for e, d in zip(*[ext_star, dist_star]):
+            if isinstance(e, float) and isinstance(d, float):
+                if abs(e - ebv_m) <= 0.2 and abs(d - d_m) <= 0.2:
                     temp[0].append(bv_star)
-                    temp[1].append(ub_obsrv[indx])
-
+                    temp[1].append(ub_star)
     plt.scatter(temp[0], temp[1], c='b', lw=0.5, s=20.)
 
     fig.tight_layout()
