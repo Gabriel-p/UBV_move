@@ -40,7 +40,8 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
     # the number of points in the ZAMS/track/isochrone.
     # dist_m = [[star_1], [star_2], ..., [star_N]]
     # [star_i] = [dist_1, dist_2, ..., dist_M]
-    dist_m = np.array(sp.cdist(list(zip(*bv_ub)), list(zip(*zams_inter[:2])), 'euclidean'))
+    dist_m = np.array(sp.cdist(list(zip(*bv_ub)),
+                      list(zip(*zams_inter[:2])), 'euclidean'))
 
     # Identify the position of the closest point in track for each star and
     # save the distance to it.
@@ -63,10 +64,11 @@ def track_distance(zams_inter, bv_intrsc, ub_intrsc):
     return min_dist_indxs
 
 
-def get_track(ZAMS_file):
+def get_track():
     '''
     Read the file with the ZAMS to be used.
     '''
+    ZAMS_file = 'zams_SK'
     bv_o, ub_o, M_abs, sp_type = [], [], [], []
     with open(ZAMS_file, mode="r") as z_f:
         for line in z_f:
@@ -82,17 +84,18 @@ def get_track(ZAMS_file):
     return bv_o, ub_o, M_abs, sp_type
 
 
-def read_input(data_file):
+def read_input():
     '''
     Read the file that stores the photometric data for all stars.
     '''
     # Loads the data in 'myfile' as a list of N lists where N is the number of
     # columns. Each of the N lists contains all the data for the column.
+    data_file = 'data_input.dat'
     data = np.genfromtxt(data_file, dtype=float, filling_values=99.999,
-    unpack=True)
+                         unpack=True)
     id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, =\
-    data[0], data[1], data[2], data[3], data[4], data[5], \
-    data[6], data[7], data[8]
+        data[0], data[1], data[2], data[3], data[4], data[5], \
+        data[6], data[7], data[8]
 
     return id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub
 
@@ -117,14 +120,12 @@ def main():
     extin_range = np.arange(0, extin_max, 0.01)
 
     # Get interpolated ZAMS points.
-    ZAMS_file = 'zams_SK'
-    bv_o, ub_o, M_abs, sp_type = get_track(ZAMS_file)
+    bv_o, ub_o, M_abs, sp_type = get_track()
     zams = [bv_o, ub_o, M_abs]
 
     # Interpolate extra colors and absolute magnitudes.
     N = 1000
     bv_col, ub_col = np.linspace(0, 1, len(bv_o)), np.linspace(0, 1, N)
-    # abs_mag = np.linspace(0, 1, N)
     # One-dimensional linear interpolation.
     bv_col_i, ub_col_i, abs_mag_i = (np.interp(ub_col, bv_col,
                                                zams[i]) for i in range(3))
@@ -133,9 +134,8 @@ def main():
     print('ZAMS interpolated.')
 
     # Get input data from file.
-    data_file = 'data_input.dat'
     id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = \
-        read_input(data_file)
+        read_input()
 
     # List that holds indexes for points in the interpolated ZAMS.
     zams_indxs = [[] for _ in range(len(id_star))]
@@ -178,7 +178,7 @@ def main():
                     # Store extinction value solution.
                     extin_list[indx].append(round(extin, 2))
 
-        print(' %0.2f done' % extin)
+        print('E(B-V) = %0.2f processed' % extin)
 
     print('Extinction range processed.')
 
