@@ -112,7 +112,7 @@ def main():
     elif len(sys.argv) == 3:
         clust_name, extin_max = str(sys.argv[1]), float(sys.argv[2])
     else:
-        clust_name, extin_max = 'cluster', 4.
+        clust_name, extin_max = 'cluster', 4. # TODO put 4. back
 
     print(clust_name, extin_max)
 
@@ -172,7 +172,7 @@ def main():
                 if dist > 0.1:
                     # Append new value.
                     zams_indxs[indx].append(n_indx)
-                    # Udate value.
+                    # Update value.
                     zams_old[0][indx] = zams_inter[0][n_indx]
                     zams_old[1][indx] = zams_inter[1][n_indx]
                     # Store extinction value solution.
@@ -183,8 +183,8 @@ def main():
     print('Extinction range processed.')
 
     # Lists for plotting.
-    bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq = [[], [], [], []], \
-        [[], [], [], []], [], []
+    x_uniq, y_uniq, m_obs_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
+        ub_int_uniq = [], [], [], [[], [], [], []], [[], [], [], []], [], []
     # Generate final lists for writing to file.
     M_abs_final = [[] for _ in range(len(id_star))]
     sp_type_final = [[] for _ in range(len(id_star))]
@@ -212,6 +212,9 @@ def main():
 
         # Identify stars with a unique solution for plotting.
         if len(star_indxs) == 1:
+            x_uniq.append(x_star[indx])
+            y_uniq.append(y_star[indx])
+            m_obs_uniq.append(m_obs[indx])
             bv_obs_uniq[0].append(bv_obsrv[indx])
             bv_obs_uniq[1].append(e_bv[indx])
             ub_obs_uniq[0].append(ub_obsrv[indx])
@@ -231,8 +234,8 @@ def main():
                 extin_list[indx].append('--')
 
         if len(star_indxs) > 4:
-            print('Star with too many solutions (>4):\n', id_star[indx],
-                  extin_list[indx])
+            print('Star with too many solutions (>4):\n', int(id_star[indx]),
+                  x_star[indx], y_star[indx], extin_list[indx])
             for i in range(4):
                 M_abs_final[indx].append('--')
                 sp_type_final[indx].append('--')
@@ -245,7 +248,8 @@ def main():
         clust_name, id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv,
         ub_obsrv, e_ub, extin_list, M_abs_final, dist, sp_type_final)
     make_plots.main(
-        clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
+        clust_name, x_star, y_star, x_uniq, y_uniq, m_obs, m_obs_uniq,
+        ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
         bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq, extin_list, dist)
 
     print('End.')
