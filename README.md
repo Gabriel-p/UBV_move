@@ -49,7 +49,7 @@ see **Fig. 1**, and shows a density map of all the extinction and distance value
 for all the observed stars in the CMD in various bin sizes. The maximum density value is
 displayed and assumed as the most likely extinction and distance values for the cluster.
 
-![Output 1](/out1.png "Example density map.")
+![Output 1](modules/out1.png "Example density map.")
 **Fig. 1** *Density map of extinction vs distances values showing all possible solutions
 for all the observed stars.*
 
@@ -59,7 +59,7 @@ a unique solution) and a CMD showing only those observed stars with at least one
 including extinction and distance values within a given range of the most likely extinction
 and distance values assumed for the cluster (right).
 
-![Output 2](/out2.png "Example CMDs.")
+![Output 2](modules/out2.png "Example CMDs.")
 **Fig. 2** *Left: CMD of observed cluster. Center: Stars with unique solutions placed over
 the main sequence. Right: Only stars with distance and extinction values close to the
 maximum density value in the density map.*

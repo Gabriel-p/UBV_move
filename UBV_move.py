@@ -68,7 +68,7 @@ def get_track():
     '''
     Read the file with the ZAMS to be used.
     '''
-    ZAMS_file = 'zams_SK'
+    ZAMS_file = 'modules/zams_SK'
     bv_o, ub_o, M_abs, sp_type = [], [], [], []
     with open(ZAMS_file, mode="r") as z_f:
         for line in z_f:
@@ -90,7 +90,7 @@ def read_input():
     '''
     # Loads the data in 'myfile' as a list of N lists where N is the number of
     # columns. Each of the N lists contains all the data for the column.
-    data_file = 'data_input.dat'
+    data_file = 'input/data_input.dat'
     data = np.genfromtxt(data_file, dtype=float, filling_values=99.999,
                          unpack=True)
     id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub, =\
@@ -231,7 +231,7 @@ def main():
                 extin_list[indx].append('--')
 
         if len(star_indxs) > 4:
-            print('Star with too many solutions (>4):', id_star[indx],
+            print('Star with too many solutions (>4):\n', id_star[indx],
                   extin_list[indx])
             for i in range(4):
                 M_abs_final[indx].append('--')

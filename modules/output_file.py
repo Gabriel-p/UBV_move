@@ -1,11 +1,18 @@
 
+from os.path import exists
+from os import makedirs
+
 
 def main(clust_name, id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv,
          ub_obsrv, e_ub, extin_list, M_abs_final, dist, sp_type_final):
     """
     Generate output data file.
     """
-    with open(clust_name + '_stars_out.dat', "w") as f_out:
+    # Generate output dir/subdir if it doesn't exist.
+    if not exists('output'):
+        makedirs('output')
+
+    with open('output/' + clust_name + '_stars_out.dat', "w") as f_out:
         header = [
             '#ID', 'x', 'y', 'V', 'ev', 'BV', 'ebv', 'UB', 'eub', 'E(B-V)',
             'Mv', 'd(kpc)', 'SP', 'E(B-V)', 'Mv', 'd(kpc)', 'SP', 'E(B-V)',
@@ -29,7 +36,7 @@ def main(clust_name, id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv,
             lines[indx].append(dist[indx][i])
             lines[indx].append(sp_type_final[indx][i])
 
-    with open(clust_name + '_stars_out.dat', "a") as f_out:
+    with open('output/' + clust_name + '_stars_out.dat', "a") as f_out:
         for line in lines:
             f_out.write(
                 '{:<9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} {:>9} '

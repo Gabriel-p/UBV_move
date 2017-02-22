@@ -26,15 +26,15 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
     # Axis limits.
     plt.xlim(0, d_max)
     plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
+    plt.xlabel(r'Dist (kpc)', fontsize=12)
+    plt.ylabel(r'$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
     h_g = gaussian_filter(hist, 1.5, mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
+    text1 = r'$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+    text2 = r'$dist^{max}\,=\,%0.2f$' % d_m
     text = text1 + text2
     ax1.text(0.7, 0.85, text, transform=ax1.transAxes,
              bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
@@ -149,7 +149,7 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
 
     fig.tight_layout()
     # Generate output plot file.
-    plt.savefig(clust_name + '_dens_map.png', dpi=150)
+    plt.savefig('output/' + clust_name + '_dens_map.png', dpi=300)
     print('Plot 1 created.')
 
     fig = plt.figure(figsize=(30, 10))  # create the top-level container
@@ -165,7 +165,7 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
     # Plot extinction line.
     plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
     # Plot all observed stars.
-    plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, s=10.)
+    plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, edgecolors='k', s=10.)
 
     ax2 = fig.add_subplot(132)
     plt.xlim(-0.7, 2.5)
@@ -178,18 +178,15 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
              transform=ax2.transAxes, bbox=dict(facecolor='white', alpha=0.85),
              fontsize=18)
     # Plot ZAMS.
-    # plt.scatter(track[0], track[1], c='k', marker='x', lw=0.5, s=30.)
     plt.plot(bv_o, ub_o, c='k', ls='-')
     # Plot extinction line.
     plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-    # Plot stars with unique solutions.
-    # for indx, star in enumerate(bv_int_uniq):
     # Plot error bars.
     plt.errorbar(
         bv_obs_uniq[0], ub_obs_uniq[0], yerr=ub_obs_uniq[1],
-        xerr=bv_obs_uniq[1], fmt='.', ms=2., lw=0.3, c='b')
+        xerr=bv_obs_uniq[1], ms=2., lw=0.3, c='b', fmt='.')
     # Plot corrected stars with unique solutions.
-    plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, s=30.)
+    plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, edgecolors='k', s=20.)
     # Plot extinction lines.
     plt.plot([bv_int_uniq, bv_obs_uniq[0]],
              [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
@@ -223,5 +220,5 @@ def main(clust_name, ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
 
     fig.tight_layout()
     # Generate output plot file.
-    plt.savefig(clust_name + '_CMD.png', dpi=150)
+    plt.savefig('output/' + clust_name + '_CMD.png', dpi=300)
     print('Plot 2 created.')
