@@ -15,18 +15,170 @@ def star_size(mag, min_mag):
     return 0.1 + factor * 10 ** ((np.array(mag) - min_mag) / -2.5)
 
 
-def dens_map():
+def v_segmented(clust_name, m_obs, bv_obsrv, ub_obsrv, bv_o, ub_o):
+    """
+    """
+    #
+    fig = plt.figure(figsize=(20, 20))
+
+    v_max = math.floor(min(m_obs))
+    v_1st_seg = float(math.ceil(sorted(m_obs)[:10][-1]))
+
+    segments = []
+
+    # Add first segment
+    idx = np.where((np.array(m_obs) >= v_max) & (np.array(m_obs) <= v_1st_seg))
+    segments.append([bv_obsrv[idx], ub_obsrv[idx]])
+
+    for _ in range(0, 8):
+        idx = np.where((np.array(m_obs) >= float(v_1st_seg + _)) &
+                       (np.array(m_obs) < float(v_1st_seg + _ + 1.)))
+        segments.append([bv_obsrv[idx], ub_obsrv[idx]])
+        # Store last V value.
+        v_min = float(v_1st_seg + _ + 1.)
+
+    # Add last segment
+    idx = np.where((np.array(m_obs) >= v_min) & (np.array(m_obs) <= 1.e6))
+    segments.append([bv_obsrv[idx], ub_obsrv[idx]])
+
+    v_range = [float(v_max)]
+    v_range += [float(v_1st_seg + _) for _ in range(0, 8)]
+    v_range.append(math.ceil(max(m_obs)))
+
+    for i in range(1, 10):
+        if segments[i - 1][0].any():
+            ax = fig.add_subplot(3, 3, i)
+
+            plt.xlim(-0.4, 2.6)
+            plt.ylim(1.7, -1.3)
+            plt.xlabel('$(B-V)$', fontsize=14)
+            plt.ylabel('$(U-B)$', fontsize=14)
+            ax.minorticks_on()
+            ax.grid(b=True, which='major', color='gray', linestyle='-',
+                    zorder=1)
+            text = r'${:.0f} \leq \,V_{{obs}}\, < {:.0f}$' + '\nN={}'
+            ax.text(
+                .7, 0.9, text.format(
+                    v_range[i - 1], v_range[i], len(segments[i - 1][0])),
+                transform=ax.transAxes,
+                bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
+            plt.scatter(segments[i - 1][0], segments[i - 1][1], edgecolor='k',
+                        lw=.5, zorder=4)
+            # Plot ZAMS.
+            plt.plot(bv_o, ub_o, c='k', ls='-', zorder=2)
+            # Plot extinction line.
+            plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+
+    fig.tight_layout()
+    # Generate output plot file.
+    plt.savefig('output/' + clust_name + '_A.png', dpi=300)
+    print('Two-color diagrams segmented by V intervals plotted.')
+
+
+def tcd_chart(clust_name, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max, ebv_sig,
+              dm_sig, extin_fix, dm_fix, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,
+              ub_int_uniq, extin_list, dist, x_star, y_star, m_obs, E_BV,
+              dist_mod, x_prob, y_prob, m_prob, bv_prob, ub_prob):
+    """
+    """
+    fig = plt.figure(figsize=(20, 20))
+
+    ax1 = fig.add_subplot(221)
+    plt.xlim(-0.4, 2.6)
+    plt.ylim(1.7, -1.3)
+    plt.xlabel('$(B-V)$', fontsize=18)
+    plt.ylabel('$(U-B)$', fontsize=18)
+    ax1.minorticks_on()
+    ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+    ax1.text(0.75, 0.95, 'N={}'.format(len(bv_obsrv)), transform=ax1.transAxes,
+             bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+    # Plot ZAMS.
+    plt.plot(bv_o, ub_o, c='k', ls='-', zorder=2)
+    # Plot extinction line.
+    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+    # Plot all observed stars.
+    plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, edgecolors='k', s=10.,
+                zorder=4)
+
+    ax2 = fig.add_subplot(222)
+    plt.xlim(-0.4, 2.6)
+    plt.ylim(1.7, -1.3)
+    plt.xlabel('$(B-V)$', fontsize=18)
+    plt.ylabel('$(U-B)$', fontsize=18)
+    ax2.minorticks_on()
+    ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+    text1 = r'$E_{{(B-V)}}^{{max}}\,=\,{:0.2f}$'.format(extin_max) + '\n'
+    text2 = "N={}".format(len(bv_int_uniq))
+    text = text1 + text2
+    ax2.text(0.75, 0.92, text, transform=ax2.transAxes,
+             bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+    # Plot ZAMS.
+    plt.plot(bv_o, ub_o, c='k', ls='-', zorder=2)
+    # Plot extinction line.
+    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+    # Plot error bars.
+    plt.errorbar(
+        bv_obs_uniq[0], ub_obs_uniq[0], yerr=ub_obs_uniq[1],
+        xerr=bv_obs_uniq[1], ms=2., lw=0.3, c='b', fmt='.')
+    # Plot corrected stars with unique solutions.
+    plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, edgecolors='k', s=20.,
+                zorder=4)
+    # Plot extinction lines.
+    plt.plot([bv_int_uniq, bv_obs_uniq[0]],
+             [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
+
+    ax3 = fig.add_subplot(223)
+    plt.xlim(-0.4, 2.6)
+    plt.ylim(1.7, -1.3)
+    plt.xlabel('$(B-V)$', fontsize=18)
+    plt.ylabel('$(U-B)$', fontsize=18)
+    ax3.minorticks_on()
+    ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
+    # Plot ZAMS.
+    plt.plot(bv_o, ub_o, c='k', ls='-', zorder=2)
+    # Plot moved ZAMS
+    E_UB = 0.72 * E_BV + 0.05 * E_BV ** 2
+    plt.plot(np.array(bv_o) + E_BV, np.array(ub_o) + E_UB, c='g', ls='--',
+             zorder=2)
+    # Plot extinction line.
+    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
+    # Plot probable cluster stars.
+    plt.scatter(bv_prob, ub_prob, c='b', lw=0.5, edgecolors='k', s=20.,
+                zorder=4)
+    text1 = '$E_{{(B-V)}}\,=\, {:0.2f} \pm {}$'.format(E_BV, ebv_sig) + '\n'
+    text2 = '$dist\,=\, {:0.2f} \pm {}$'.format(dist_mod, dm_sig) + '\n'
+    text3 = "N={}".format(len(bv_prob))
+    text = text1 + text2 + text3
+    ax3.text(0.67, 0.9, text, transform=ax3.transAxes,
+             bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
+
+    ax4 = fig.add_subplot(224)
+    plt.xlabel('x', fontsize=18)
+    plt.ylabel('y', fontsize=18)
+    ax4.minorticks_on()
+    ax4.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
+             zorder=1)
+    # All stars
+    min_mag = min(m_obs)
+    st_sizes_arr = star_size(m_obs, min_mag)
+    plt.scatter(x_star, y_star, marker='o', c='black', s=st_sizes_arr,
+                zorder=4)
+    # Probable cluster members
+    st_sizes_arr_uniq = star_size(m_prob, min_mag)
+    plt.scatter(x_prob, y_prob, marker='o', facecolors='none', edgecolor='b',
+                s=st_sizes_arr_uniq + 10., lw=.5, zorder=4)
+    ax4.set_aspect('equal')
+
+    fig.tight_layout()
+    # Generate output plot file.
+    plt.savefig('output/' + clust_name + '_B.png', dpi=300)
+    print('Two-color diagrams and xy chart plotted.')
+
+
+def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     """
     """
     fig = plt.figure(figsize=(20, 10))  # create the top-level container
-
-    # Maximum distance value in axis.
-    d_max = np.sort(ext_dist_all[1])[int(0.9 * len(ext_dist_all[1]))]
-    e_max = np.sort(ext_dist_all[0])[int(0.9 * len(ext_dist_all[0]))]
-
-    hist, xedges, yedges = np.histogram2d(
-        ext_dist_all[1], ext_dist_all[0],
-        bins=[int(d_max / 0.002), int(max(ext_dist_all[0]) / 0.005)])
 
     # Plot density map.
     ax1 = fig.add_subplot(231)
@@ -156,153 +308,28 @@ def dens_map():
 
     fig.tight_layout()
     # Generate output plot file.
-    plt.savefig('output/' + clust_name + '_dens_map.png', dpi=300)
+    plt.savefig('output/' + clust_name + '_C.png', dpi=300)
     print('Density maps plotted.')
 
 
-def tcd_chart():
-    """
-    """
-    fig = plt.figure(figsize=(20, 20))  # create the top-level container
-    plt.xlim(-0.7, 2.5)
-    plt.ylim(1.7, -1.3)
-    plt.xlabel('$(B-V)$', fontsize=18)
-    plt.ylabel('$(U-B)$', fontsize=18)
-    ax1.minorticks_on()
-    ax1.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-    # Plot ZAMS.
-    plt.plot(bv_o, ub_o, c='k', ls='-')
-    # Plot extinction line.
-    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-    # Plot all observed stars.
-    plt.scatter(bv_obsrv, ub_obsrv, c='b', lw=0.5, edgecolors='k', s=10.)
-
-    ax2 = fig.add_subplot(222)
-    plt.xlim(-0.7, 2.5)
-    plt.ylim(1.7, -1.3)
-    plt.xlabel('$(B-V)$', fontsize=18)
-    plt.ylabel('$(U-B)$', fontsize=18)
-    ax2.minorticks_on()
-    ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-    ax2.text(0.67, 0.93, '$E_{(B-V)}^{max}\,=\,%0.2f$' % extin_max,
-             transform=ax2.transAxes, bbox=dict(facecolor='white', alpha=0.85),
-             fontsize=18)
-    # Plot ZAMS.
-    plt.plot(bv_o, ub_o, c='k', ls='-')
-    # Plot extinction line.
-    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-    # Plot error bars.
-    plt.errorbar(
-        bv_obs_uniq[0], ub_obs_uniq[0], yerr=ub_obs_uniq[1],
-        xerr=bv_obs_uniq[1], ms=2., lw=0.3, c='b', fmt='.')
-    # Plot corrected stars with unique solutions.
-    plt.scatter(bv_int_uniq, ub_int_uniq, c='r', lw=0.5, edgecolors='k', s=20.)
-    # Plot extinction lines.
-    plt.plot([bv_int_uniq, bv_obs_uniq[0]],
-             [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
-
-    ax3 = fig.add_subplot(223)
-    plt.xlim(-0.7, 2.5)
-    plt.ylim(1.7, -1.3)
-    plt.xlabel('$(B-V)$', fontsize=18)
-    plt.ylabel('$(U-B)$', fontsize=18)
-    ax3.minorticks_on()
-    ax3.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-    text1 = '$E_{(B-V)}\,=\,%0.2f\pm 0.2$' '\n' % ebv_m
-    text2 = '$dist\,=\,%0.2f\pm 0.2$' % d_m
-    text = text1 + text2
-    ax3.text(0.67, 0.93, text, transform=ax3.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
-    # Plot ZAMS.
-    plt.plot(bv_o, ub_o, c='k', ls='-')
-    # Plot extinction line.
-    plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-    # Plot probable cluster stars.
-    temp = [[], []]
-    for bv_star, ub_star, ext_star, dist_star in zip(*[
-            bv_obsrv, ub_obsrv, extin_list, dist]):
-        for e, d in zip(*[ext_star, dist_star]):
-            if isinstance(e, float) and isinstance(d, float):
-                if abs(e - ebv_m) <= 0.2 and abs(d - d_m) <= 0.2:
-                    temp[0].append(bv_star)
-                    temp[1].append(ub_star)
-    plt.scatter(temp[0], temp[1], c='b', lw=0.5, s=20.)
-
-    ax4 = fig.add_subplot(224)
-    plt.xlabel('x', fontsize=18)
-    plt.ylabel('y', fontsize=18)
-    ax4.minorticks_on()
-    ax4.grid(b=True, which='major', color='gray', linestyle='--', lw=0.5,
-             zorder=1)
-    min_mag = min(m_obs)
-    st_sizes_arr = star_size(m_obs, min_mag)
-    plt.scatter(x_star, y_star, marker='o', c='black', s=st_sizes_arr,
-                zorder=4)
-    st_sizes_arr_uniq = star_size(m_obs_uniq, min_mag)
-    plt.scatter(x_uniq, y_uniq, marker='o', facecolors='none', edgecolor='r',
-                s=st_sizes_arr_uniq + 10., lw=.5, zorder=4)
-    ax4.set_aspect('equal')
-
-    fig.tight_layout()
-    # Generate output plot file.
-    plt.savefig('output/' + clust_name + '_CMD.png', dpi=300)
-    print('Two-color diagrams and xy chart plotted.')
-
-
-def v_segmented(clust_name, m_obs, bv_obsrv, ub_obsrv, bv_o, ub_o):
-    """
-    """
-    #
-    fig = plt.figure(figsize=(20, 20))
-    v_max = math.floor(min(m_obs))
-    v_range = [float(v_max + _) for _ in range(0, 9)]
-
-    segments = []
-    for _ in range(0, 9):
-        idx = np.where((np.array(m_obs) >= float(v_max + _)) &\
-            (np.array(m_obs) < float(v_max + _ + 1.)))
-        segments.append([bv_obsrv[idx], ub_obsrv[idx]])
-        # Store last V value.
-        v_min = float(v_max + _ + 1.)
-    v_range.append(math.ceil(max(m_obs)))
-
-    # Add last segment
-    idx = np.where((np.array(m_obs) >= v_min) & (np.array(m_obs) <= 1.e6))
-    segments.append([bv_obsrv[idx], ub_obsrv[idx]])
-
-    for i in range(1, 10):
-        ax = fig.add_subplot(3, 3, i)
-
-        plt.xlim(-0.7, 2.5)
-        plt.ylim(1.7, -1.3)
-        plt.xlabel('$(B-V)$', fontsize=14)
-        plt.ylabel('$(U-B)$', fontsize=14)
-        ax.minorticks_on()
-        ax.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-        ax.text(0.7, 0.93, r'${:.0f} \leq \,V_{{obs}}\, < {:.0f}$'.format(
-            v_range[i - 1], v_range[i]), transform=ax.transAxes,
-            bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-        plt.scatter(segments[i - 1][0], segments[i - 1][1], edgecolor='k',
-                    lw=.5, zorder=4)
-        # Plot ZAMS.
-        plt.plot(bv_o, ub_o, c='k', ls='-', zorder=1)
-        # Plot extinction line.
-        plt.plot([-0.33, 1.17], [-1.2, -0.0075], c='k', lw=1.5, ls='--')
-
-    fig.tight_layout()
-    # Generate output plot file.
-    plt.savefig('output/' + clust_name + '_segment.png', dpi=300)
-    print('Two-color diagrams segmented by V intervals plotted.')
-
-
-def main(clust_name, x_star, y_star, x_uniq, y_uniq, m_obs, m_obs_uniq,
-         ext_dist_all, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
-         bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq, extin_list, dist):
+def main(clust_name, plot_v_seg, plot_tcd_chart, plot_dens_map,
+         x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
+         ebv_sig, dm_sig, extin_fix, dm_fix, bv_obs_uniq, ub_obs_uniq,
+         bv_int_uniq, ub_int_uniq, extin_list, dist, d_max, e_max, hist,
+         xedges, yedges, E_BV, dist_mod, x_prob, y_prob, m_prob, bv_prob,
+         ub_prob):
     """
     Generate final plots.
     """
     print('Creating output plots.')
 
-    dens_map()
-    # tcd_chart()
-    v_segmented(clust_name, m_obs, bv_obsrv, ub_obsrv, bv_o, ub_o)
+    if plot_v_seg:
+            v_segmented(clust_name, m_obs, bv_obsrv, ub_obsrv, bv_o, ub_o)
+    if plot_tcd_chart:
+        tcd_chart(
+            clust_name, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max, ebv_sig,
+            dm_sig, extin_fix, dm_fix, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,
+            ub_int_uniq, extin_list, dist, x_star, y_star, m_obs, E_BV,
+            dist_mod, x_prob, y_prob, m_prob, bv_prob, ub_prob)
+    if plot_dens_map:
+        dens_map(clust_name, d_max, e_max, hist, xedges, yedges)
