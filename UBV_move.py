@@ -32,11 +32,12 @@ def params_input():
                     sols_write = reader[1]
                 if reader[0] == 'PL':
                     plot_v_seg = True if reader[1] is 'y' else False
-                    plot_tcd_chart = True if reader[2] is 'y' else False
-                    plot_dens_map = True if reader[3] is 'y' else False
+                    plot_dens_map = True if reader[2] is 'y' else False
+                    plot_tcd_uniq = True if reader[3] is 'y' else False
+                    plot_tcd_prob = True if reader[4] is 'y' else False
 
     return extin_max, ebv_sig, dm_sig, extin_fix, dm_fix, sols_write,\
-        plot_v_seg, plot_tcd_chart, plot_dens_map
+        plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob
 
 
 def get_files():
@@ -57,7 +58,7 @@ def main():
     distance, absolute magnitude and spectral type.
     '''
     extin_max, ebv_sig, dm_sig, extin_fix, dm_fix, sols_write, plot_v_seg,\
-        plot_tcd_chart, plot_dens_map = params_input()
+        plot_dens_map, plot_tcd_uniq, plot_tcd_prob = params_input()
 
     zams_inter, bv_o, ub_o, M_abs, sp_type = zams_interp.main()
 
@@ -79,8 +80,9 @@ def main():
         # Assign intrinsic mag/colors, distance, spectral types for each
         # solution; identify stars with  unique solutions.
         extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-            sp_type_final, id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
-            ub_int_uniq = zams_solutions.main(
+            sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq,\
+            bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
+            zams_solutions.main(
                 id_star, x_star, y_star, extin_list, zams_indxs,
                 zams_inter, M_abs, sp_type, m_obs, bv_obsrv, e_bv,
                 ub_obsrv, e_ub)
@@ -104,12 +106,12 @@ def main():
             sp_type_final, id_uniq, id_prob, sols_write)
 
         make_plots.main(
-            clust_name, plot_v_seg, plot_tcd_chart, plot_dens_map,
-            x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
-            ebv_sig, dm_sig, extin_fix, dm_fix, bv_obs_uniq, ub_obs_uniq,
-            bv_int_uniq, ub_int_uniq, extin_list, dist, d_max, e_max, hist,
-            xedges, yedges, E_BV, dist_mod, x_prob, y_prob, m_prob, bv_prob,
-            ub_prob)
+            clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq,
+            plot_tcd_prob, x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv,
+            ub_obsrv, extin_max, ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq,
+            d_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq, dist,
+            d_max, e_max, hist, xedges, yedges, E_BV, dist_mod, x_prob,
+            y_prob, m_prob, bv_prob, ub_prob)
 
     print('End.')
 

@@ -21,7 +21,7 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
     ext_dist_all = [[], []]
 
     # Store unique solutions.
-    # x_uniq, y_uniq, m_obs_uniq = [], [], []
+    x_uniq, y_uniq, m_uniq, d_uniq = [], [], [], []
     id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
         [], [[], [], [], []], [[], [], [], []], [], []
 
@@ -53,16 +53,22 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
         # Identify stars with a unique solution for plotting.
         if len(star_indxs) == 1:
             id_uniq.append(id_star[indx])
-            # x_uniq.append(x_star[indx])
-            # y_uniq.append(y_star[indx])
-            # m_obs_uniq.append(m_obs[indx])
+            x_uniq.append(x_star[indx])
+            y_uniq.append(y_star[indx])
+            m_uniq.append(m_obs[indx])
             bv_obs_uniq[0].append(bv_obsrv[indx])
             bv_obs_uniq[1].append(e_bv[indx])
             ub_obs_uniq[0].append(ub_obsrv[indx])
             ub_obs_uniq[1].append(e_ub[indx])
+            # Distances.
+            E_BV = extin_list[indx][0]
+            A_v = 3.1 * E_BV
+            dist_mod = m_obs[indx] - zams_inter[2][star_indxs[0]]
+            d_kpc = round((10 ** (0.2 * (dist_mod + 5 - A_v))) / 1000., 3)
+            d_uniq.append(d_kpc)
+            # Corrected values.
             bv_intrsc, ub_intrsc = intrsc_values(
                 bv_obsrv[indx], ub_obsrv[indx], extin_list[indx][0])
-            # Corrected values.
             bv_int_uniq.append(bv_intrsc)
             ub_int_uniq.append(ub_intrsc)
 
@@ -92,5 +98,5 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
     print("N (stars w/ unique solutions) = {}".format(len(bv_int_uniq)))
 
     return extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-        sp_type_final, id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
-        ub_int_uniq
+        sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,\
+        ub_obs_uniq, bv_int_uniq, ub_int_uniq
