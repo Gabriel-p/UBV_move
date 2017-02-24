@@ -70,7 +70,7 @@ def main():
 
         # Get input data from file.
         id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = \
-            read_input(clust_file)
+            read_input.main(clust_file)
 
         # Resolve stars on ZAMS.
         extin_list, zams_indxs = ext_solutions.main(
@@ -79,7 +79,7 @@ def main():
         # Assign intrinsic mag/colors, distance, spectral types for each
         # solution; identify stars with  unique solutions.
         extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-            sp_type_final, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
+            sp_type_final, id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
             ub_int_uniq = zams_solutions.main(
                 id_star, x_star, y_star, extin_list, zams_indxs,
                 zams_inter, M_abs, sp_type, m_obs, bv_obsrv, e_bv,
@@ -92,15 +92,16 @@ def main():
 
         # Identify most probable members using wither the extinction and
         # distance values found above, or fixed ones given by the user.
-        E_BV, dist_mod, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
+        E_BV, dist_mod, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
             prob_membs.main(
-                ebv_sig, dm_sig, extin_fix, dm_fix, x_star, y_star, m_obs,
-                bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges, yedges)
+                ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star,
+                m_obs, bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges,
+                yedges)
 
         output_file.main(
             clust_name, id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv,
             ub_obsrv, e_ub, extin_list, M_abs_final, bv_final, ub_final, dist,
-            sp_type_final)
+            sp_type_final, id_uniq, id_prob, sols_write)
 
         make_plots.main(
             clust_name, plot_v_seg, plot_tcd_chart, plot_dens_map,

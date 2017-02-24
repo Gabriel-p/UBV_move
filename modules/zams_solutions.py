@@ -22,8 +22,8 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
 
     # Store unique solutions.
     # x_uniq, y_uniq, m_obs_uniq = [], [], []
-    bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
-        [[], [], [], []], [[], [], [], []], [], []
+    id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
+        [], [[], [], [], []], [[], [], [], []], [], []
 
     for indx, star_indxs in enumerate(zams_indxs):
 
@@ -52,6 +52,7 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
 
         # Identify stars with a unique solution for plotting.
         if len(star_indxs) == 1:
+            id_uniq.append(id_star[indx])
             # x_uniq.append(x_star[indx])
             # y_uniq.append(y_star[indx])
             # m_obs_uniq.append(m_obs[indx])
@@ -91,4 +92,5 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
     print("N (stars w/ unique solutions) = {}".format(len(bv_int_uniq)))
 
     return extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-        sp_type_final, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq
+        sp_type_final, id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq,\
+        ub_int_uniq

@@ -3,8 +3,8 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 
 
-def main(ebv_sig, dm_sig, extin_fix, dm_fix, x_star, y_star, m_obs, bv_obsrv,
-         ub_obsrv, extin_list, dist, hist, xedges, yedges):
+def main(ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star, m_obs,
+         bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges, yedges):
     """
     Obtain probable member stars.
     """
@@ -26,16 +26,20 @@ def main(ebv_sig, dm_sig, extin_fix, dm_fix, x_star, y_star, m_obs, bv_obsrv,
         dist_mod = d_m
 
     # Probable cluster stars.
-    x_prob, y_prob, m_prob, bv_prob, ub_prob = [], [], [], [], []
-    for x_st, y_st, m_star, bv_star, ub_star, ext_star, dist_star in zip(*[
-            x_star, y_star, m_obs, bv_obsrv, ub_obsrv, extin_list, dist]):
+    id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob = [], [], [], [], [], []
+    for id_st, x_st, y_st, m_star, bv_star, ub_star, ext_star, dist_star in\
+        zip(*[id_star, x_star, y_star, m_obs, bv_obsrv, ub_obsrv, extin_list,
+              dist]):
         for e, d in zip(*[ext_star, dist_star]):
             if isinstance(e, float) and isinstance(d, float):
                 if abs(e - E_BV) <= ebv_sig and abs(d - d_m) <= dm_sig:
+                    id_prob.append(id_st)
                     x_prob.append(x_st)
                     y_prob.append(y_st)
                     m_prob.append(m_star)
                     bv_prob.append(bv_star)
                     ub_prob.append(ub_star)
 
-    return E_BV, dist_mod, x_prob, y_prob, m_prob, bv_prob, ub_prob
+    print("N (probable members) = {}".format(len(id_prob)))
+
+    return E_BV, dist_mod, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob
