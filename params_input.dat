@@ -1,0 +1,45 @@
+
+
+# Input the max E(B-V) value to resolve.
+#
+#    E(B-V)_max
+EM           4.
+
+# Input the sigma values for the extinction and the distance (in kpc).
+# These are used to identify probable members.
+#
+#   EBV_sigma   dst_sigma
+SG         .1        .1
+
+# Input a fixed E(B-V) value to define the probable members.
+# If you don't want to fix a value, input -1 and the most probable value
+# obtained from the density map will be used.
+#
+#    E(B-V)_fix
+EF           -1
+
+# Input a fixed distance value in kpc, to define the probable members.
+# If you don't want to fix a value, input -1 and the most probable value
+# obtained from the density map will be used.
+#
+#    dst_fix
+DM        -1
+
+# Select which solutions to write to the output file.
+#
+# all:      write all solutions found for all the observed stars.
+# unique:   only write to file those stars with unique solutions.
+# probable: write only those stars found to be probable cluster members.
+#
+#    sols
+SO    all
+
+# Select which plots to generate (y/n).
+#
+# TCD_v_seg: TCD segmented by intervals of V magnitude.
+# dens_map: D_istance vs extinction density map.
+# TCD_uniq: Plots for stars with unique solutions.
+# TCD_probable: Plots for probable member stars.
+#
+#      TCD_V_seg     dens_map    TCD_uniq     TCD_probable
+PL             y            y           y                y
