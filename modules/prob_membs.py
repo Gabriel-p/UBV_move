@@ -21,9 +21,9 @@ def main(ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star, m_obs,
     else:
         E_BV = ebv_m
     if dm_fix >= 0.:
-        dist_mod = dm_fix
+        dist_kpc = dm_fix
     else:
-        dist_mod = d_m
+        dist_kpc = d_m
 
     # Probable cluster stars.
     id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob = [], [], [], [], [], []
@@ -42,4 +42,4 @@ def main(ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star, m_obs,
 
     print("N (probable members) = {}".format(len(id_prob)))
 
-    return E_BV, dist_mod, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob
+    return E_BV, dist_kpc, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob

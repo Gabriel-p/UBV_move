@@ -221,7 +221,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
 
     ax1 = fig.add_subplot(221)
     ax1.set_title("TCD of all stars")
-    plt.xlim(-0.4, 2.6)
+    plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$(U-B)$', fontsize=18)
@@ -239,7 +239,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
 
     ax2 = fig.add_subplot(222)
     ax2.set_title("TCD of stars with unique solutions on ZAMS")
-    plt.xlim(-0.4, 2.6)
+    plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$(U-B)$', fontsize=18)
@@ -278,11 +278,17 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
                 zorder=3)
     # Plot unique solution cluster stars.
     cm = plt.cm.get_cmap('RdYlBu')
-    plt.scatter(bv_obs_uniq[0], m_uniq, c=d_uniq, lw=0.5, edgecolors='k',
+    im = plt.scatter(bv_obs_uniq[0], m_uniq, c=d_uniq, lw=0.5, edgecolors='k',
                 s=40., cmap=cm, zorder=4)
-    cbar = plt.colorbar()
+
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    divider = make_axes_locatable(ax3)
+    cax = divider.append_axes("right", size="5%", pad=0.05)
+    cbar = plt.colorbar(im, cax=cax)
+
+    # cbar = plt.colorbar()
     cbar.set_label("Dist (kpc)")
-    ax3.set_aspect('auto')
+    # ax3.set_aspect('auto')
 
     ax4 = fig.add_subplot(224)
     ax4.set_title("Positional chart, stars w/ unique solutions in red")
@@ -309,7 +315,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
 
 
 def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
-              m_obs, bv_obsrv, E_BV, dist_mod, x_prob, y_prob, m_prob,
+              m_obs, bv_obsrv, E_BV, dist_kpc, x_prob, y_prob, m_prob,
               bv_prob, ub_prob):
     """
     """
@@ -317,7 +323,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
 
     ax1 = fig.add_subplot(221)
     ax1.set_title("TCD of probable member stars")
-    plt.xlim(-0.4, 2.6)
+    plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$(U-B)$', fontsize=18)
@@ -335,7 +341,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
     plt.scatter(bv_prob, ub_prob, c='b', lw=0.5, edgecolors='k', s=20.,
                 zorder=4)
     text1 = '$E_{{(B-V)}}\,=\, {:0.2f} \pm {}$'.format(E_BV, ebv_sig) + '\n'
-    text2 = '$dist\,=\, {:0.2f} \pm {}$'.format(dist_mod, dm_sig) + '\n'
+    text2 = '$dist\,=\, {:0.2f} \pm {}$'.format(dist_kpc, dm_sig) + '\n'
     text3 = "N={}".format(len(bv_prob))
     text = text1 + text2 + text3
     ax1.text(0.67, 0.9, text, transform=ax1.transAxes,
@@ -384,7 +390,7 @@ def main(clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob,
          x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
          ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
          ub_obs_uniq, bv_int_uniq, ub_int_uniq, dist, d_max, e_max, hist,
-         xedges, yedges, E_BV, dist_mod, x_prob, y_prob, m_prob, bv_prob,
+         xedges, yedges, E_BV, dist_kpc, x_prob, y_prob, m_prob, bv_prob,
          ub_prob):
     """
     Generate final plots.
@@ -402,5 +408,5 @@ def main(clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob,
             ub_obs_uniq, bv_int_uniq, ub_int_uniq)
     if plot_tcd_prob:
         tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star,
-                  y_star, m_obs, bv_obsrv, E_BV, dist_mod, x_prob, y_prob,
+                  y_star, m_obs, bv_obsrv, E_BV, dist_kpc, x_prob, y_prob,
                   m_prob, bv_prob, ub_prob)

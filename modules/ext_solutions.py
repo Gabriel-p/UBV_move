@@ -10,7 +10,7 @@ def intrsc_values(bv_obsrv, ub_obsrv, e_bv):
     '''
     # For UBVI system.
     #
-    # E(U-B) = 0.72*E(B-V) +0.05*E(B-V)**2
+    # E(U-B) = 0.72*E(B-V) + 0.05*E(B-V)**2
     #
     # E(B-V) = (B-V) - (B-V)o
     # E(U-B) = (U-B) - (U-B)o

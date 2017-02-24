@@ -94,7 +94,7 @@ def main():
 
         # Identify most probable members using wither the extinction and
         # distance values found above, or fixed ones given by the user.
-        E_BV, dist_mod, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
+        E_BV, dist_kpc, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
             prob_membs.main(
                 ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star,
                 m_obs, bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges,
@@ -110,7 +110,7 @@ def main():
             plot_tcd_prob, x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv,
             ub_obsrv, extin_max, ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq,
             d_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq, dist,
-            d_max, e_max, hist, xedges, yedges, E_BV, dist_mod, x_prob,
+            d_max, e_max, hist, xedges, yedges, E_BV, dist_kpc, x_prob,
             y_prob, m_prob, bv_prob, ub_prob)
 
     print('End.')
