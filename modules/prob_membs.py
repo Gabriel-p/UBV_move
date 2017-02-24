@@ -3,7 +3,7 @@ import numpy as np
 from scipy.ndimage.filters import gaussian_filter
 
 
-def main(ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star, m_obs,
+def main(ebv_sig, dm_sig, extin_fix, dst_fix, id_star, x_star, y_star, m_obs,
          bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges, yedges):
     """
     Obtain probable member stars.
@@ -20,25 +20,31 @@ def main(ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star, m_obs,
         E_BV = extin_fix
     else:
         E_BV = ebv_m
-    if dm_fix >= 0.:
-        dist_kpc = dm_fix
+    if dst_fix >= 0.:
+        dist_kpc = dst_fix
     else:
         dist_kpc = d_m
 
     # Probable cluster stars.
     id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob = [], [], [], [], [], []
+    # For each observed star.
     for id_st, x_st, y_st, m_star, bv_star, ub_star, ext_star, dist_star in\
         zip(*[id_star, x_star, y_star, m_obs, bv_obsrv, ub_obsrv, extin_list,
               dist]):
+        # For each extinction + distance solution assigned to this star.
         for e, d in zip(*[ext_star, dist_star]):
+            # Skip dummy '--' values.
             if isinstance(e, float) and isinstance(d, float):
-                if abs(e - E_BV) <= ebv_sig and abs(d - d_m) <= dm_sig:
-                    id_prob.append(id_st)
-                    x_prob.append(x_st)
-                    y_prob.append(y_st)
-                    m_prob.append(m_star)
-                    bv_prob.append(bv_star)
-                    ub_prob.append(ub_star)
+                # If both extinction and distance values are within the
+                # accepted ranges, the star is a probable member.
+                if abs(e - E_BV) <= ebv_sig:
+                    if abs(d - dist_kpc) <= dm_sig:
+                        id_prob.append(id_st)
+                        x_prob.append(x_st)
+                        y_prob.append(y_st)
+                        m_prob.append(m_star)
+                        bv_prob.append(bv_star)
+                        ub_prob.append(ub_star)
 
     print("N (probable members) = {}".format(len(id_prob)))
 

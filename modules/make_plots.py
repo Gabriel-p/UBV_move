@@ -267,7 +267,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
 
     ax3 = fig.add_subplot(223)
     ax3.set_title("Stars w unique solutions colored according to d (kpc)")
-    plt.xlim(min(bv_obsrv) - .2, max(bv_obsrv) + .2)
+    plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$V$', fontsize=18)
@@ -279,7 +279,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
     # Plot unique solution cluster stars.
     cm = plt.cm.get_cmap('RdYlBu')
     im = plt.scatter(bv_obs_uniq[0], m_uniq, c=d_uniq, lw=0.5, edgecolors='k',
-                s=40., cmap=cm, zorder=4)
+                     s=40., cmap=cm, zorder=4)
 
     from mpl_toolkits.axes_grid1 import make_axes_locatable
     divider = make_axes_locatable(ax3)
@@ -349,7 +349,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
 
     ax2 = fig.add_subplot(222)
     ax2.set_title("CMD of probable member stars")
-    plt.xlim(min(bv_obsrv) - .2, max(bv_obsrv) + .2)
+    plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$V$', fontsize=18)

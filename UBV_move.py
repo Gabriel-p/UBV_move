@@ -24,10 +24,8 @@ def params_input():
                     extin_max = float(reader[1])
                 if reader[0] == 'SG':
                     ebv_sig, dm_sig = float(reader[1]), float(reader[2])
-                if reader[0] == 'EF':
-                    extin_fix = float(reader[1])
-                if reader[0] == 'DM':
-                    dm_fix = float(reader[1])
+                if reader[0] == 'FI':
+                    extin_fix, dst_fix = float(reader[1]), float(reader[2])
                 if reader[0] == 'SO':
                     sols_write = reader[1]
                 if reader[0] == 'PL':
@@ -36,7 +34,7 @@ def params_input():
                     plot_tcd_uniq = True if reader[3] is 'y' else False
                     plot_tcd_prob = True if reader[4] is 'y' else False
 
-    return extin_max, ebv_sig, dm_sig, extin_fix, dm_fix, sols_write,\
+    return extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write,\
         plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob
 
 
@@ -57,7 +55,7 @@ def main():
     each star over a given ZAMS thus obtaining its parameters: extinction,
     distance, absolute magnitude and spectral type.
     '''
-    extin_max, ebv_sig, dm_sig, extin_fix, dm_fix, sols_write, plot_v_seg,\
+    extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write, plot_v_seg,\
         plot_dens_map, plot_tcd_uniq, plot_tcd_prob = params_input()
 
     zams_inter, bv_o, ub_o, M_abs, sp_type = zams_interp.main()
@@ -96,7 +94,7 @@ def main():
         # distance values found above, or fixed ones given by the user.
         E_BV, dist_kpc, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
             prob_membs.main(
-                ebv_sig, dm_sig, extin_fix, dm_fix, id_star, x_star, y_star,
+                ebv_sig, dm_sig, extin_fix, dst_fix, id_star, x_star, y_star,
                 m_obs, bv_obsrv, ub_obsrv, extin_list, dist, hist, xedges,
                 yedges)
 

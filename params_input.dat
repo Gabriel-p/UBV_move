@@ -5,25 +5,18 @@
 #    E(B-V)_max
 EM           4.
 
-# Input the sigma values for the extinction and the distance (in kpc).
-# These are used to identify probable members.
+# Input the sigma values for the extinction and distance (in kpc).
+# These define the ranges used to identify probable members.
 #
 #   EBV_sigma   dst_sigma
-SG         .1        .1
+SG         .1          .1
 
-# Input a fixed E(B-V) value to define the probable members.
-# If you don't want to fix a value, input -1 and the most probable value
-# obtained from the density map will be used.
+# Input a fixed E(B-V) and/or distance (kpc) value to define the probable
+# members. If you don't want to fix a value, input -1 and the most probable
+# value(s) obtained from the density map will be used.
 #
-#    E(B-V)_fix
-EF           -1
-
-# Input a fixed distance value in kpc, to define the probable members.
-# If you don't want to fix a value, input -1 and the most probable value
-# obtained from the density map will be used.
-#
-#    dst_fix
-DM        -1
+#    E(B-V)_fix      dst_fix
+FI           -1           -1
 
 # Select which solutions to write to the output file.
 #
