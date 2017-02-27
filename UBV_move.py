@@ -34,6 +34,11 @@ def params_input():
                     plot_tcd_uniq = True if reader[3] is 'y' else False
                     plot_tcd_prob = True if reader[4] is 'y' else False
 
+    if extin_max < extin_fix:
+        print("\nMaximum E(B-V) value can not be smaller than "
+              "the fixed E(B-V) value.\n")
+        raise SystemExit
+
     return extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write,\
         plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob
 

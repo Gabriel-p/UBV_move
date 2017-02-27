@@ -2,6 +2,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.ndimage.filters import gaussian_filter
 
 
@@ -88,7 +89,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel(r'Dist (kpc)', fontsize=12)
     plt.ylabel(r'$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 1.5, mode='constant')
+    h_g = gaussian_filter(hist, 2., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -109,7 +110,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel('Dist (kpc)', fontsize=12)
     plt.ylabel('$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 2., mode='constant')
+    h_g = gaussian_filter(hist, 3., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -130,7 +131,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel('Dist (kpc)', fontsize=12)
     plt.ylabel('$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 2.5, mode='constant')
+    h_g = gaussian_filter(hist, 4., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -151,7 +152,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel('Dist (kpc)', fontsize=12)
     plt.ylabel('$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 3., mode='constant')
+    h_g = gaussian_filter(hist, 5., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -172,7 +173,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel('Dist (kpc)', fontsize=12)
     plt.ylabel('$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 3.5, mode='constant')
+    h_g = gaussian_filter(hist, 6., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -193,7 +194,7 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     plt.xlabel('Dist (kpc)', fontsize=12)
     plt.ylabel('$E_{(B-V)}$', fontsize=14)
     # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 4., mode='constant')
+    h_g = gaussian_filter(hist, 7., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])
@@ -212,6 +213,16 @@ def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     print('Density maps plotted.')
 
 
+def reject_outliers(data, m=2.):
+    """
+    Reject outliers, http://stackoverflow.com/a/16562028/1391441
+    """
+    d = np.abs(data - np.median(data))
+    mdev = np.median(d)
+    s = d / mdev if mdev else 0.
+    return data[s < m]
+
+
 def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
               ub_obsrv, extin_max, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
               ub_obs_uniq, bv_int_uniq, ub_int_uniq):
@@ -220,7 +231,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
     fig = plt.figure(figsize=(20, 20))
 
     ax1 = fig.add_subplot(221)
-    ax1.set_title("TCD of all stars")
+    ax1.set_title("TCD of all stars", fontsize=16)
     plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
@@ -238,7 +249,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
                 zorder=4)
 
     ax2 = fig.add_subplot(222)
-    ax2.set_title("TCD of stars with unique solutions on ZAMS")
+    ax2.set_title("TCD of stars with unique solutions on ZAMS", fontsize=16)
     plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
@@ -266,7 +277,8 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
              [ub_int_uniq, ub_obs_uniq[0]], lw=0.3, ls='-')
 
     ax3 = fig.add_subplot(223)
-    ax3.set_title("Stars w unique solutions colored according to d (kpc)")
+    ax3.set_title("Stars w unique solutions colored according to d (kpc)",
+                  fontsize=16)
     plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
@@ -278,20 +290,18 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
                 zorder=3)
     # Plot unique solution cluster stars.
     cm = plt.cm.get_cmap('RdYlBu')
-    im = plt.scatter(bv_obs_uniq[0], m_uniq, c=d_uniq, lw=0.5, edgecolors='k',
-                     s=40., cmap=cm, zorder=4)
-
-    from mpl_toolkits.axes_grid1 import make_axes_locatable
+    d_no_out = reject_outliers(np.array(d_uniq))
+    im = plt.scatter(
+        bv_obs_uniq[0], m_uniq, c=d_uniq, lw=0.5, edgecolors='k',
+        s=40., cmap=cm, vmin=min(d_no_out), vmax=max(d_no_out), zorder=4)
     divider = make_axes_locatable(ax3)
     cax = divider.append_axes("right", size="5%", pad=0.05)
     cbar = plt.colorbar(im, cax=cax)
-
-    # cbar = plt.colorbar()
     cbar.set_label("Dist (kpc)")
-    # ax3.set_aspect('auto')
 
     ax4 = fig.add_subplot(224)
-    ax4.set_title("Positional chart, stars w/ unique solutions in red")
+    ax4.set_title("Positional chart, stars w/ unique solutions in red",
+                  fontsize=16)
     plt.xlabel('x', fontsize=18)
     plt.ylabel('y', fontsize=18)
     ax4.minorticks_on()
@@ -322,7 +332,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
     fig = plt.figure(figsize=(20, 20))
 
     ax1 = fig.add_subplot(221)
-    ax1.set_title("TCD of probable member stars")
+    ax1.set_title("TCD of probable member stars", fontsize=16)
     plt.xlim(-0.4, 2.1)
     plt.ylim(1.7, -1.3)
     plt.xlabel('$(B-V)$', fontsize=18)
@@ -348,7 +358,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
              bbox=dict(facecolor='white', alpha=0.85), fontsize=18)
 
     ax2 = fig.add_subplot(222)
-    ax2.set_title("CMD of probable member stars")
+    ax2.set_title("CMD of probable member stars", fontsize=16)
     plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
@@ -363,7 +373,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
                 zorder=4)
 
     ax4 = fig.add_subplot(224)
-    ax4.set_title("Positional chart, probable members in blue")
+    ax4.set_title("Positional chart, probable members in blue", fontsize=16)
     plt.xlabel('x', fontsize=18)
     plt.ylabel('y', fontsize=18)
     ax4.minorticks_on()

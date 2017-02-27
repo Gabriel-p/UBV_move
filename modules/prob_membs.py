@@ -10,7 +10,7 @@ def main(ebv_sig, dm_sig, extin_fix, dst_fix, id_star, x_star, y_star, m_obs,
     """
     # H_g is the 2D histogram with a Gaussian filter applied, using a large
     # sigma value.
-    h_g = gaussian_filter(hist, 4., mode='constant')
+    h_g = gaussian_filter(hist, 7., mode='constant')
     x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
     d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
         np.average(yedges[y_max:y_max + 2])

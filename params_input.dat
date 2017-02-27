@@ -3,13 +3,13 @@
 # Input the max E(B-V) value to resolve.
 #
 #    E(B-V)_max
-EM           4.
+EM           2.
 
 # Input the sigma values for the extinction and distance (in kpc).
 # These define the ranges used to identify probable members.
 #
 #   EBV_sigma   dst_sigma
-SG         .1          .1
+SG         .2          .5
 
 # Input a fixed E(B-V) and/or distance (kpc) value to define the probable
 # members. If you don't want to fix a value, input -1 and the most probable
@@ -35,4 +35,4 @@ SO    all
 # TCD_probable: Plots for probable member stars.
 #
 #      TCD_V_seg     dens_map    TCD_uniq     TCD_probable
-PL             y            y           y                y
+PL             y           y           y                y
