@@ -12,4 +12,10 @@ values that move the star over the ZAMS according to the extinction law. Each
 extinction solution positions the star at a given distance, with fixed values
 for its absolute magnitude and spectral type.
 
+See the [Wiki][2] for details on how to install and use.
+
 Dirty code, definitely needs improvement. Works nonetheless.
+
+
+[1]: http://www.fcaglp.unlp.edu.ar/~egiorgi/cumulos/herramientas/tracks/zams.txt
+[2]: https://github.com/Gabriel-p/UBV_move/wiki
