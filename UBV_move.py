@@ -9,6 +9,7 @@ from modules import ext_dist_histo
 from modules import prob_membs
 from modules import output_file
 from modules import make_plots
+from modules._version import __version__
 
 
 def params_input():
@@ -60,6 +61,13 @@ def main():
     each star over a given ZAMS thus obtaining its parameters: extinction,
     distance, absolute magnitude and spectral type.
     '''
+
+    print('\n-------------------------------------------')
+    print('             [UBV-move {}]'.format(__version__))
+    print('-------------------------------------------\n')
+    import pdb; pdb.set_trace()  # breakpoint 577a3aee //
+
+
     extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write, plot_v_seg,\
         plot_dens_map, plot_tcd_uniq, plot_tcd_prob = params_input()
 
