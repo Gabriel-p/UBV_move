@@ -23,11 +23,11 @@ Please cite as:
 ```
 @misc{perren_2017_ubvmove,
   author       = {Perren, G. I.},
-  title        = {UBV_move: First release version},
-  month        = feb,
+  title        = {UBV_move: version 1.1},
+  month        = mar,
   year         = 2017,
-  doi          = {10.5281/zenodo.322862},
-  url          = {https://doi.org/10.5281/zenodo.322862}
+  doi          = {10.5281/zenodo.375672},
+  url          = {https://github.com/Gabriel-p/UBV_move}
 }
 ```
 
