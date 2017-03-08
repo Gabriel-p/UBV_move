@@ -1,8 +1,6 @@
 UBV-Move
 =============
 
-[![DOI](https://zenodo.org/badge/14873360.svg)](https://zenodo.org/badge/latestdoi/14873360)
-
 Moves stars in a UBV color-color diagram to their intrinsic position over a
 given ZAMS. Uses an interpolated [Schmidt-Kaler (1982)][1] ZAMS and the standard
 extinction law:
@@ -30,6 +28,7 @@ Please cite as:
   url          = {https://github.com/Gabriel-p/UBV_move}
 }
 ```
+[![DOI](https://zenodo.org/badge/14873360.svg)](https://zenodo.org/badge/latestdoi/14873360)
 
 
 [1]: http://www.fcaglp.unlp.edu.ar/~egiorgi/cumulos/herramientas/tracks/zams.txt
