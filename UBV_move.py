@@ -65,8 +65,6 @@ def main():
     print('\n-------------------------------------------')
     print('             [UBV-move {}]'.format(__version__))
     print('-------------------------------------------\n')
-    import pdb; pdb.set_trace()  # breakpoint 577a3aee //
-
 
     extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write, plot_v_seg,\
         plot_dens_map, plot_tcd_uniq, plot_tcd_prob = params_input()
