@@ -25,5 +25,3 @@ dependencies:
 - vs2015_runtime=14.0.25123=0
 - wheel=0.29.0=py36_0
 - zlib=1.2.8=vc14_3
-prefix: C:\Users\USER\Miniconda3\envs\ubvenv
-
