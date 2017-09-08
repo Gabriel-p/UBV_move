@@ -4,6 +4,12 @@
 #   ID  x  y  V  e_V  (B-V)  e_BV  (U-B)  e_UB
 CN   0  1  2  3    4     5      6      7     8
 
+# Filter by center and radius. If no filter needs to be applied, input at
+# rad=0.
+#
+#   cent_x   cent_y     rad
+FL      0.       0.       0.
+
 
 # Input the max E(B-V) value to resolve.
 #
@@ -40,4 +46,4 @@ SO    all
 # TCD_probable: Plots for probable member stars.
 #
 #      TCD_V_seg     dens_map    TCD_uniq     TCD_probable
-PL             y           y           y                y
+PL             n           n           y                y

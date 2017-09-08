@@ -109,7 +109,5 @@ def main(extin_max, N_st, bv_obsrv, ub_obsrv, zams_inter):
                     # Store extinction value solution.
                     extin_list[indx].append(round(extin, 2))
 
-        print('E(B-V) = %0.2f processed' % extin)
-
     print('Extinction range processed.')
     return extin_list, zams_indxs

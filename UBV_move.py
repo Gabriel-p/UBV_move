@@ -3,6 +3,7 @@ from os import listdir
 from os.path import isfile, join
 from modules import zams_interp
 from modules import read_input
+from modules import filt_cent_rad
 from modules import ext_solutions
 from modules import zams_solutions
 from modules import ext_dist_histo
@@ -23,6 +24,9 @@ def params_input():
                 reader = line.split()
                 if reader[0] == 'CN':
                     col_numbers = map(int, reader[1:])
+                if reader[0] == 'FL':
+                    cx, cy, r = map(float, reader[1:])
+                    cent, rad = [cx, cy], r
                 if reader[0] == 'EM':
                     extin_max = float(reader[1])
                 if reader[0] == 'SG':
@@ -42,8 +46,9 @@ def params_input():
               "the fixed E(B-V) value.\n")
         raise SystemExit
 
-    return col_numbers, extin_max, ebv_sig, dm_sig, extin_fix, dst_fix,\
-        sols_write, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob
+    return col_numbers, cent, rad, extin_max, ebv_sig, dm_sig, extin_fix,\
+        dst_fix, sols_write, plot_v_seg, plot_dens_map, plot_tcd_uniq,\
+        plot_tcd_prob
 
 
 def get_files():
@@ -68,8 +73,8 @@ def main():
     print('             [UBV-move {}]'.format(__version__))
     print('-------------------------------------------\n')
 
-    col_numbers, extin_max, ebv_sig, dm_sig, extin_fix, dst_fix, sols_write,\
-        plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob =\
+    col_numbers, cent, rad, extin_max, ebv_sig, dm_sig, extin_fix, dst_fix,\
+        sols_write, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob =\
         params_input()
 
     zams_inter, bv_o, ub_o, M_abs, sp_type = zams_interp.main()
@@ -82,8 +87,11 @@ def main():
         print("\nProcessing: {}".format(clust_name))
 
         # Get input data from file.
-        id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = \
-            read_input.main(col_numbers, clust_file)
+        in_data = read_input.main(col_numbers, clust_file)
+
+        # Filter by center and radius.
+        id_star, data_clean = filt_cent_rad.main(in_data, cent, rad)
+        x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = data_clean
 
         # Resolve stars on ZAMS.
         extin_list, zams_indxs = ext_solutions.main(
