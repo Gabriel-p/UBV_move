@@ -1,5 +1,6 @@
 
 import numpy as np
+from astropy.io import ascii
 
 
 def rem_bad_stars(ids, x, y, V, eV, BV, eBV, UB, eUB):
@@ -31,17 +32,20 @@ def rem_bad_stars(ids, x, y, V, eV, BV, eBV, UB, eUB):
         UB_clean, eUB_clean
 
 
-def main(data_file):
+def main(col_numbers, data_file):
     '''
     Read the file that stores the photometric data for all stars.
     '''
-    # Loads the data in 'data_file' as a list of N lists where N is the number
-    # of columns. Each of the N lists contains all the data for the column.
-    data = np.genfromtxt(data_file, dtype=float, filling_values=99.999,
-                         unpack=True)
+    # Loads the data in 'data_file'.
+    data = ascii.read(
+        data_file,
+        fill_values=[('', '0'), ('--', '0'), ('INDEF', '0')]).filled(99.9)
+    # Separate into the appropriate types of data given by 'col_numbers'.
+    all_data = []
+    for cn in col_numbers:
+        all_data.append(data.columns[cn].tolist())
     id_star, x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub =\
-        data[0], data[1], data[2], data[3], data[4], data[5], \
-        data[6], data[7], data[8]
+        all_data
     print("N (all stars in file) = {}".format(len(id_star)))
 
     # If any magnitude or color value (or their errors) is too large, discard
