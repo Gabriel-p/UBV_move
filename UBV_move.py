@@ -25,8 +25,9 @@ def params_input():
                 if reader[0] == 'CN':
                     col_numbers = map(int, reader[1:])
                 if reader[0] == 'FL':
-                    cx, cy, r = map(float, reader[1:])
+                    cx, cy, r = map(float, reader[1:-1])
                     cent, rad = [cx, cy], r
+                    inout_flag = reader[-1]
                 if reader[0] == 'EM':
                     extin_max = float(reader[1])
                 if reader[0] == 'SG':
@@ -38,17 +39,18 @@ def params_input():
                 if reader[0] == 'PL':
                     plot_v_seg = True if reader[1] is 'y' else False
                     plot_dens_map = True if reader[2] is 'y' else False
-                    plot_tcd_uniq = True if reader[3] is 'y' else False
-                    plot_tcd_prob = True if reader[4] is 'y' else False
+                    dens_flag = reader[3]
+                    plot_tcd_uniq = True if reader[4] is 'y' else False
+                    plot_tcd_prob = True if reader[5] is 'y' else False
 
     if extin_max < extin_fix:
         print("\nMaximum E(B-V) value can not be smaller than "
               "the fixed E(B-V) value.\n")
         raise SystemExit
 
-    return col_numbers, cent, rad, extin_max, ebv_sig, dm_sig, extin_fix,\
-        dst_fix, sols_write, plot_v_seg, plot_dens_map, plot_tcd_uniq,\
-        plot_tcd_prob
+    return col_numbers, cent, rad, inout_flag, extin_max, ebv_sig, dm_sig,\
+        extin_fix, dst_fix, sols_write, plot_v_seg, plot_dens_map, dens_flag,\
+        plot_tcd_uniq, plot_tcd_prob
 
 
 def get_files():
@@ -73,9 +75,9 @@ def main():
     print('             [UBV-move {}]'.format(__version__))
     print('-------------------------------------------\n')
 
-    col_numbers, cent, rad, extin_max, ebv_sig, dm_sig, extin_fix, dst_fix,\
-        sols_write, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob =\
-        params_input()
+    col_numbers, cent, rad, inout_flag, extin_max, ebv_sig, dm_sig,\
+        extin_fix, dst_fix, sols_write, plot_v_seg, plot_dens_map, dens_flag,\
+        plot_tcd_uniq, plot_tcd_prob = params_input()
 
     zams_inter, bv_o, ub_o, M_abs, sp_type = zams_interp.main()
 
@@ -90,7 +92,8 @@ def main():
         in_data = read_input.main(col_numbers, clust_file)
 
         # Filter by center and radius.
-        id_star, data_clean = filt_cent_rad.main(in_data, cent, rad)
+        id_star, data_clean = filt_cent_rad.main(
+            in_data, cent, rad, inout_flag)
         x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = data_clean
 
         # Resolve stars on ZAMS.
@@ -100,7 +103,7 @@ def main():
         # Assign intrinsic mag/colors, distance, spectral types for each
         # solution; identify stars with  unique solutions.
         extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-            sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq,\
+            sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq, ext_unq,\
             bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
             zams_solutions.main(
                 id_star, x_star, y_star, extin_list, zams_indxs,
@@ -110,9 +113,14 @@ def main():
         # Generate 2D histogram of found valid distances and extinctions.
         # Find the maximum density value, identified as the most probable
         # distance and extinction.
-        d_max, e_max, hist, xedges, yedges = ext_dist_histo.main(ext_dist_all)
+        if dens_flag == 'all':
+            d_max, e_max, hist, xedges, yedges = ext_dist_histo.main(
+                ext_dist_all)
+        else:
+            d_max, e_max, hist, xedges, yedges = ext_dist_histo.main(
+                [ext_unq, d_uniq])
 
-        # Identify most probable members using wither the extinction and
+        # Identify most probable members using either the extinction and
         # distance values found above, or fixed ones given by the user.
         E_BV, dist_kpc, id_prob, x_prob, y_prob, m_prob, bv_prob, ub_prob =\
             prob_membs.main(

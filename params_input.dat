@@ -1,14 +1,16 @@
 
 # Data column numbers.
 #
-#   ID  x  y  V  e_V  (B-V)  e_BV  (U-B)  e_UB
-CN   0  1  2  3    4     5      6      7     8
+#   ID   x   y   V   e_V   (B-V)   e_BV   (U-B)   e_UB
+CN   0   1   2   3     4       5      6       7      8
 
-# Filter by center and radius. If no filter needs to be applied, input at
-# rad=0.
+
+# Filter by center and radius. The 'in/out' determines if the area to analyze
+# is that within the region defined, or the one outside of it .
+# If no filter needs to be applied, input rad=0.
 #
-#   cent_x   cent_y     rad
-FL      0.       0.       0.
+#   cent_x   cent_y     rad      in/out
+FL      0.       0.      0.         out
 
 
 # Input the max E(B-V) value to resolve.
@@ -16,11 +18,13 @@ FL      0.       0.       0.
 #    E(B-V)_max
 EM           2.
 
+
 # Input the sigma values for the extinction and distance (in kpc).
 # These define the ranges used to identify probable members.
 #
 #   EBV_sigma   dst_sigma
-SG         .2          .5
+SG         .2          .3
+
 
 # Input a fixed E(B-V) and/or distance (kpc) value to define the probable
 # members. If you don't want to fix a value, input -1 and the most probable
@@ -28,6 +32,7 @@ SG         .2          .5
 #
 #    E(B-V)_fix      dst_fix
 FI           -1           -1
+
 
 # Select which solutions to write to the output file.
 #
@@ -38,12 +43,15 @@ FI           -1           -1
 #    sols
 SO    all
 
+
 # Select which plots to generate (y/n).
 #
 # TCD_v_seg: TCD segmented by intervals of V magnitude.
-# dens_map: D_istance vs extinction density map.
+# dens_map: Distance vs extinction density map.
+# dens_flag: If the dens_map is plotted, this selects if 'all' solutions will
+# be used to generate it, or just the unique solutions ('unq').
 # TCD_uniq: Plots for stars with unique solutions.
 # TCD_probable: Plots for probable member stars.
 #
-#      TCD_V_seg     dens_map    TCD_uniq     TCD_probable
-PL             n           n           y                y
+#      TCD_V_seg     dens_map  dens_flag   TCD_uniq     TCD_probable
+PL             y            y        unq          y               y

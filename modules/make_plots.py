@@ -2,6 +2,7 @@
 import numpy as np
 import math
 import matplotlib.pyplot as plt
+import matplotlib.offsetbox as offsetbox
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 from scipy.ndimage.filters import gaussian_filter
 
@@ -79,133 +80,36 @@ def v_segmented(clust_name, m_obs, bv_obsrv, ub_obsrv, bv_o, ub_o):
 def dens_map(clust_name, d_max, e_max, hist, xedges, yedges):
     """
     """
-    fig = plt.figure(figsize=(20, 10))  # create the top-level container
+    fig = plt.figure(figsize=(10, 20))
 
-    # Plot density map.
-    ax1 = fig.add_subplot(231)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel(r'Dist (kpc)', fontsize=12)
-    plt.ylabel(r'$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 2., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = r'$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = r'$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax1.text(0.7, 0.85, text, transform=ax1.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
-
-    # Plot density map.
-    ax2 = fig.add_subplot(232)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 3., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax2.text(0.7, 0.85, text, transform=ax2.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
-
-    # Plot density map.
-    ax3 = fig.add_subplot(233)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 4., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax3.text(0.7, 0.85, text, transform=ax3.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
-
-    # Plot density map.
-    ax4 = fig.add_subplot(234)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 5., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax4.text(0.7, 0.85, text, transform=ax4.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
-
-    # Plot density map.
-    ax5 = fig.add_subplot(235)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 6., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax5.text(0.7, 0.85, text, transform=ax5.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
-
-    # Plot density map.
-    ax6 = fig.add_subplot(236)
-    # Axis limits.
-    plt.xlim(0, d_max)
-    plt.ylim(0, e_max)
-    plt.xlabel('Dist (kpc)', fontsize=12)
-    plt.ylabel('$E_{(B-V)}$', fontsize=14)
-    # H_g is the 2D histogram with a gaussian filter applied
-    h_g = gaussian_filter(hist, 7., mode='constant')
-    x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
-    d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
-        np.average(yedges[y_max:y_max + 2])
-    text1 = '$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
-    text2 = '$dist^{max}\,=\,%0.2f$' % d_m
-    text = text1 + text2
-    ax6.text(0.7, 0.85, text, transform=ax6.transAxes,
-             bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
-    plt.imshow(h_g.transpose(), origin='lower',
-               extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
-               cmap=plt.get_cmap('jet'), aspect='auto')
+    stdevs = [2., 4., 6., 8., 10., 12.]
+    for i in range(6):
+        ax = fig.add_subplot(6, 1, i + 1)
+        # Axis limits.
+        plt.xlim(0, d_max)
+        plt.ylim(0, e_max)
+        plt.xlabel(r'Dist (kpc)', fontsize=12)
+        plt.ylabel(r'$E_{(B-V)}$', fontsize=14)
+        # H_g is the 2D histogram with a gaussian filter applied
+        h_g = gaussian_filter(hist, stdevs[i], mode='constant')
+        x_max, y_max = np.unravel_index(h_g.argmax(), h_g.shape)
+        d_m, ebv_m = np.average(xedges[x_max:x_max + 2]), \
+            np.average(yedges[y_max:y_max + 2])
+        text1 = r'$E_{(B-V)}^{max}\,=\,%0.2f$' '\n' % ebv_m
+        text2 = r'$dist^{max}\,=\,%0.2f$' % d_m
+        text = text1 + text2
+        # ax.text(0.72, 0.07, text, transform=ax.transAxes,
+        #         bbox=dict(facecolor='white', alpha=0.85), fontsize=14)
+        ob = offsetbox.AnchoredText(text, pad=0.2, loc=4, prop=dict(size=12))
+        ob.patch.set(alpha=0.85)
+        ax.add_artist(ob)
+        plt.imshow(h_g.transpose(), origin='lower',
+                   extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]],
+                   cmap=plt.get_cmap('RdYlBu_r'), aspect='auto')
+        plt.contour(h_g.transpose(), 5, colors='#551a8b', linewidths=0.5,
+                    extent=[xedges[0], xedges[-1], yedges[0], yedges[-1]])
+        plt.axvline(x=d_m, linestyle='--', lw=.85, color='r')
+        plt.axhline(y=ebv_m, linestyle='--', lw=.85, color='r')
 
     fig.tight_layout()
     # Generate output plot file.
@@ -279,7 +183,8 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
     ax3 = fig.add_subplot(223)
     ax3.set_title("Stars w unique solutions colored according to d (kpc)",
                   fontsize=16)
-    plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
+    plt.xlim(max(min(bv_obsrv) - .2, -1.),
+             min(2.5 * np.median(bv_obsrv), max(bv_obsrv) + .2))
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$V$', fontsize=18)
@@ -359,7 +264,8 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
 
     ax2 = fig.add_subplot(222)
     ax2.set_title("CMD of probable member stars", fontsize=16)
-    plt.xlim(max(min(bv_obsrv) - .2, -1.), max(bv_obsrv) + .2)
+    plt.xlim(max(min(bv_obsrv) - .2, -1.),
+             min(2.5 * np.median(bv_obsrv), max(bv_obsrv) + .2))
     plt.ylim(max(m_obs) + .5, min(m_obs) - .5)
     plt.xlabel('$(B-V)$', fontsize=18)
     plt.ylabel('$V$', fontsize=18)

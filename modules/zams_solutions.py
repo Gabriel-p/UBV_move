@@ -20,6 +20,10 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
     # extinction-distance density maps.
     ext_dist_all = [[], []]
 
+    # Store *unique* extinction and distance values. Used to generate the
+    # extinction-distance density maps.
+    ext_unq = []
+
     # Store unique solutions.
     x_uniq, y_uniq, m_uniq, d_uniq = [], [], [], []
     id_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq =\
@@ -66,6 +70,7 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
             dist_mod = m_obs[indx] - zams_inter[2][star_indxs[0]]
             d_kpc = round((10 ** (0.2 * (dist_mod + 5 - A_v))) / 1000., 3)
             d_uniq.append(d_kpc)
+            ext_unq.append(E_BV)
             # Corrected values.
             bv_intrsc, ub_intrsc = intrsc_values(
                 bv_obsrv[indx], ub_obsrv[indx], extin_list[indx][0])
@@ -98,5 +103,5 @@ def main(id_star, x_star, y_star, extin_list, zams_indxs, zams_inter, M_abs,
     print("N (stars w/ unique solutions) = {}".format(len(bv_int_uniq)))
 
     return extin_list, ext_dist_all, M_abs_final, bv_final, ub_final, dist,\
-        sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,\
-        ub_obs_uniq, bv_int_uniq, ub_int_uniq
+        sp_type_final, id_uniq, x_uniq, y_uniq, m_uniq, d_uniq, ext_unq,\
+        bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq
