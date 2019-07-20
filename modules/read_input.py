@@ -39,7 +39,8 @@ def main(col_numbers, data_file):
     # Loads the data in 'data_file'.
     data = ascii.read(
         data_file,
-        fill_values=[('', '0'), ('--', '0'), ('INDEF', '0')]).filled(99.9)
+        fill_values=[
+            ('', '0'), ('--', '0'), ('INDEF', '0'), ('nan', '0')]).filled(99.9)
     # Separate into the appropriate types of data given by 'col_numbers'.
     all_data = []
     for cn in col_numbers:

@@ -10,13 +10,13 @@ CN   0   1   2   3     4       5      6       7      8
 # If no filter needs to be applied, input rad=0.
 #
 #   cent_x   cent_y     rad      in/out
-FL      0.       0.      0.         out
+FL      0.        0.      0.         in
 
 
 # Input the max E(B-V) value to resolve.
 #
 #    E(B-V)_max
-EM           2.
+EM           10.
 
 
 # Input the sigma values for the extinction and distance (in kpc).
@@ -54,4 +54,4 @@ SO    all
 # TCD_probable: Plots for probable member stars.
 #
 #      TCD_V_seg     dens_map  dens_flag   TCD_uniq     TCD_probable
-PL             y            y        unq          y               y
+PL             y            y        all          y               y

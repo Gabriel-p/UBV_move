@@ -23,9 +23,9 @@ def params_input():
             if not line.startswith("#") and line.strip() != '':
                 reader = line.split()
                 if reader[0] == 'CN':
-                    col_numbers = map(int, reader[1:])
+                    col_numbers = list(map(int, reader[1:]))
                 if reader[0] == 'FL':
-                    cx, cy, r = map(float, reader[1:-1])
+                    cx, cy, r = list(map(float, reader[1:-1]))
                     cent, rad = [cx, cy], r
                     inout_flag = reader[-1]
                 if reader[0] == 'EM':
