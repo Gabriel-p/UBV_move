@@ -37,8 +37,8 @@ def main(ebv_sig, dm_sig, extin_fix, dst_fix, id_star, x_star, y_star, m_obs,
             if isinstance(e, float) and isinstance(d, float):
                 # If both extinction and distance values are within the
                 # accepted ranges, the star is a probable member.
-                if abs(e - E_BV) <= ebv_sig:
-                    if abs(d - dist_kpc) <= dm_sig:
+                if abs(e - E_BV) <= ebv_sig and abs(d - dist_kpc) <= dm_sig:
+                    if id_st not in id_prob:
                         id_prob.append(id_st)
                         x_prob.append(x_st)
                         y_prob.append(y_st)
