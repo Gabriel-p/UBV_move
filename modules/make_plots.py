@@ -128,7 +128,7 @@ def reject_outliers(data, m=2.):
 
 
 def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
-              ub_obsrv, extin_max, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
+              ub_obsrv, max_extin, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
               ub_obs_uniq, bv_int_uniq, ub_int_uniq):
     """
     """
@@ -160,7 +160,7 @@ def tcd_chart(clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
     plt.ylabel('$(U-B)$', fontsize=18)
     ax2.minorticks_on()
     ax2.grid(b=True, which='major', color='gray', linestyle='-', zorder=1)
-    text1 = r'$E_{{(B-V)}}^{{max}}\,=\,{:0.2f}$'.format(extin_max) + '\n'
+    text1 = r'$E_{{(B-V)}}^{{max}}\,=\,{:0.2f}$'.format(max_extin) + '\n'
     text2 = "N={}".format(len(bv_int_uniq))
     text = text1 + text2
     ax2.text(0.75, 0.92, text, transform=ax2.transAxes,
@@ -303,7 +303,7 @@ def tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star, y_star,
 
 
 def main(clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob,
-         x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv, ub_obsrv, extin_max,
+         x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv, ub_obsrv, max_extin,
          ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
          ub_obs_uniq, bv_int_uniq, ub_int_uniq, dist, d_max, e_max, hist,
          xedges, yedges, E_BV, dist_kpc, x_prob, y_prob, m_prob, bv_prob,
@@ -320,7 +320,7 @@ def main(clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq, plot_tcd_prob,
     if plot_tcd_uniq:
         tcd_chart(
             clust_name, bv_o, ub_o, x_star, y_star, m_obs, bv_obsrv,
-            ub_obsrv, extin_max, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
+            ub_obsrv, max_extin, x_uniq, y_uniq, m_uniq, d_uniq, bv_obs_uniq,
             ub_obs_uniq, bv_int_uniq, ub_int_uniq)
     if plot_tcd_prob:
         tcd_probs(clust_name, bv_o, ub_o, ebv_sig, dm_sig, dist, x_star,

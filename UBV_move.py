@@ -97,7 +97,7 @@ def main():
         x_star, y_star, m_obs, e_m, bv_obsrv, e_bv, ub_obsrv, e_ub = data_clean
 
         # Resolve stars on ZAMS.
-        extin_list, zams_indxs = ext_solutions.main(
+        extin_list, zams_indxs, max_extin = ext_solutions.main(
             extin_max, len(id_star), bv_obsrv, ub_obsrv, zams_inter)
 
         # Assign intrinsic mag/colors, distance, spectral types for each
@@ -136,7 +136,7 @@ def main():
         make_plots.main(
             clust_name, plot_v_seg, plot_dens_map, plot_tcd_uniq,
             plot_tcd_prob, x_star, y_star, m_obs, bv_o, ub_o, bv_obsrv,
-            ub_obsrv, extin_max, ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq,
+            ub_obsrv, max_extin, ebv_sig, dm_sig, x_uniq, y_uniq, m_uniq,
             d_uniq, bv_obs_uniq, ub_obs_uniq, bv_int_uniq, ub_int_uniq, dist,
             d_max, e_max, hist, xedges, yedges, E_BV, dist_kpc, x_prob,
             y_prob, m_prob, bv_prob, ub_prob)
